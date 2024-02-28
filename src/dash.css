@@ -1,0 +1,8 @@
+.CardBgColor{
+    background: rgb(40, 34, 70);
+    background: linear-gradient(158deg,rgba(40,34,70,1) 0%, rgba(40,34,141,1)100%);
+}
+.CardBgColor1{
+    background: rgb(53, 138, 148);
+    background: linear-gradient(158deg,rgba(53,138,148,1) 0%, rgba(91,180,196,1)100%);
+}

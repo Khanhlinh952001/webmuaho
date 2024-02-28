@@ -1,24 +1,74 @@
-import logo from './logo.svg';
-import './App.css';
-
+import { Route, Routes, BrowserRouter } from 'react-router-dom';
+import { publicRouter, privateRouter } from './Router';
+import DashLayout from './Layout/DashboarLayout';
+import { Fragment } from 'react';
+import { useState } from 'react';
+import { useEffect } from 'react';
+import { onAuthStateChanged } from 'firebase/auth';
+import { auth } from './firebase';
 function App() {
+  const [user, setUser] = useState(false);
+   useEffect(()=>{
+     onAuthStateChanged(auth ,(user) =>{
+      if(user){
+        setUser(user);
+       }else{
+        setUser(false);
+      }
+    })
+   });
+
+  //  if (user) {
+  //   return   navigate('/home');;
+  // }
   return (
-    <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.js</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
-    </div>
+    <>
+      <BrowserRouter>
+        <Routes>
+          {user
+            ? privateRouter.map((route, index) => {
+                const Page = route.component;
+                let Layout = DashLayout;
+                if (route.layout) {
+                  Layout = route.layout;
+                } else if (route.layout === null) {
+                  Layout = Fragment;
+                }
+                return (
+                  <Route
+                    key={index}
+                    path={route.path}
+                    element={
+                      <Layout>
+                        <Page />
+                      </Layout>
+                    }
+                  />
+                );
+              })
+            : publicRouter.map((route, index) => {
+                const Page = route.component;
+                let Layout = DashLayout;
+                if (route.layout) {
+                  Layout = route.layout;
+                } else if (route.layout === null) {
+                  Layout = Fragment;
+                }
+                return (
+                  <Route
+                    key={index}
+                    path={route.path}
+                    element={
+                      <Layout>
+                        <Page />
+                      </Layout>
+                    }
+                  />
+                );
+              })}
+        </Routes>
+      </BrowserRouter>
+    </>
   );
 }
 
