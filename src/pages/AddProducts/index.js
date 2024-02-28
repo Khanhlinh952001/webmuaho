@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import Box from '@mui/material/Box';
 import Grid from '@mui/material/Grid';
 import Stack from '@mui/material/Stack';
@@ -6,65 +6,118 @@ import TextField from '@mui/material/TextField';
 import IconButton from '@mui/material/IconButton';
 import SearchIcon from '@mui/icons-material/Search';
 import ClearIcon from '@mui/icons-material/Clear';
-import DeleteIcon from '@mui/icons-material/Delete';
-import EditIcon from '@mui/icons-material/Edit';
-import CloudUploadIcon from '@mui/icons-material/CloudUpload';
+import FavoriteIcon from '@mui/icons-material/Favorite';
+import FavoriteBorderIcon from '@mui/icons-material/FavoriteBorder';
+import AddIcon from '@mui/icons-material/Add';
 import Card from '@mui/material/Card';
 import CardActions from '@mui/material/CardActions';
 import CardContent from '@mui/material/CardContent';
 import CardMedia from '@mui/material/CardMedia';
 import Button from '@mui/material/Button';
 import Typography from '@mui/material/Typography';
-import FavoriteIcon from '@mui/icons-material/Favorite';
-import FavoriteBorderIcon from '@mui/icons-material/FavoriteBorder';
-import AddIcon from '@mui/icons-material/Add';
-import Dialog from '@mui/material/Dialog';
-import DialogTitle from '@mui/material/DialogTitle';
-import DialogContent from '@mui/material/DialogContent';
-import DialogActions from '@mui/material/DialogActions';
+import { Link } from 'react-router-dom';
+import { translate } from "@vitalets/google-translate-api";
 import axios from 'axios';
+import xml2js from 'xml2js';
+import TranslateIcon from '@mui/icons-material/Translate';
+import CircularProgress from '@mui/material/CircularProgress';
+import { auth } from '../../firebase';
+import { database } from '../../firebase';
+import { SuccessAlert } from '../../Contains/Alert';
+import { ErrorAlert } from '../../Contains/Alert';
+import { ref, set } from 'firebase/database';
+import { v4 as uuidv4 } from 'uuid';
+import { NotificationContainer, NotificationManager } from 'react-notifications';
+import 'react-notifications/lib/notifications.css';
+
+
 function AddProducts() {
   const [searchQuery, setSearchQuery] = useState('');
-  const [isLiked, setIsLiked] = useState(false);
-  const [isAddDialogOpen, setAddDialogOpen] = useState(false);
   const [jsonData, setJsonData] = useState(null);
+  const [isLoading, setIsLoading] = useState(false);
+  const [saveSuccess, setSaveSuccess] = useState(false);
 
   const handleSearchChange = async () => {
     try {
+      setIsLoading(true);
+
       const response = await axios.get(
         `http://openapi.11st.co.kr/openapi/OpenApiService.tmall?key=23ebb9fd1b66ae392b91870ed7bb4447&apiCode=ProductSearch&keyword=${searchQuery}`
       );
-      console.log("response"+ response.data)
 
-     const trimmedData = response.data.trim();
-      console.log(trimmedData)
+      xml2js.parseString(response.data, (error, result) => {
+        if (error) {
+          console.error('Error parsing XML:', error);
+        } else {
+          const jsonData = result?.ProductSearchResponse?.Products[0]?.Product || [];
+          setJsonData(jsonData);
+        }
+      });
     } catch (error) {
       console.error("Error fetching search results:", error);
+    } finally {
+      setIsLoading(false);
     }
   };
- 
+
+
 
   const handleLikeToggle = () => {
-    setIsLiked(!isLiked);
+    // Implement your like toggle logic here
   };
 
-  const handleAddClick = () => {
-    setAddDialogOpen(true);
-  };
 
-  const handleCloseAddDialog = () => {
-    setAddDialogOpen(false);
+
+
+  const handleSave = (product) => {
+    setIsLoading(true);
+    const uniqueId = uuidv4();
+  
+    const images = [
+      { id: "image1", url: product.ProductImage300[0] },
+      // Thêm các đối tượng hình ảnh khác nếu cần thiết
+    ];
+  
+    set(ref(database, `Products/${uniqueId}`), {
+      StoreId: auth.currentUser.uid,
+      ProductName: product.ProductName[0],
+      ProductCode: product.ProductCode[0],
+      ProductImage: images,
+      ProductPrice: product.ProductPrice[0],
+      ProductSales: product.SalePrice[0],
+      Status: "false",
+    }).then(() => {
+      setIsLoading(false);
+      setSaveSuccess(true); // Set success state to true
+  
+     // Show success notification
+      NotificationManager.success('Thêm thành công', 'Success', 3000);
+    }).catch((error) => {
+      console.error("Error writing user data: ", error);
+      setIsLoading(false);
+  
+      // Show error notification
+      NotificationManager.error('Thêm không thành công', 'Error', 3000);
+    });
   };
+  
+
+
+
 
   return (
-    <div style={{ backgroundColor: '#eff1f3', height: '100vh' }}>
+    <div style={{ backgroundColor: '#eff1f3', height: '100%',paddingTop:'40px' }}>
+     <NotificationContainer />
       <Box sx={{ flexGrow: 1 }}>
         <Box height={20} />
+
+
+
         <Grid container spacing={2}>
-          <Grid item xs={8}>
+          <Grid item xs={8} >
             <Stack
               direction={'row'}
-              style={{
+              sx={{
                 backgroundColor: 'white',
                 marginTop: '8px',
                 borderRadius: '20px',
@@ -102,63 +155,70 @@ function AddProducts() {
             </Stack>
           </Grid>
 
-          {/* ... rest of the code ... */}
-
           <Grid item xs={12} mt={4}>
-            <Stack spacing={2} direction="row" justifyContent="center" flexWrap="wrap">
-              <Card sx={{ maxWidth: 240, boxShadow: '0 4px 8px rgba(0, 0, 0, 0.1)', marginBottom: '10px' }}>
-                <CardMedia
-                  component="img"
-                  alt="green iguana"
-                  height="140"
-                  image="/static/images/cards/contemplative-reptile.jpg"
-                />
-                <CardContent>
-                  <Typography gutterBottom variant="h6" component="div">
-                    Product Name
-                  </Typography>
-                  <Typography variant="body2" color="text.secondary">
-                    Description of the product. Lizards are a widespread group of squamate reptiles,
-                    with over 6,000 species, ranging across all continents except Antarctica.
-                  </Typography>
-                </CardContent>
-                <CardActions>
-                  <IconButton color={isLiked ? 'secondary' : 'default'} onClick={handleLikeToggle}>
-                    {isLiked ? <FavoriteIcon color='red' /> : <FavoriteBorderIcon />}
-                  </IconButton>
-                  <Button size="small" variant="contained" color="primary">
-                    View Details
-                  </Button>
-                  <IconButton color="primary" onClick={handleAddClick}>
-                    <AddIcon />
-                  </IconButton>
-                </CardActions>
-              </Card>
-              {/* Add more cards as needed */}
+            <Stack ml={4} direction="row" justifyContent="start" flexWrap="wrap">
+              {jsonData && jsonData.map((product) => (
+                <div style={{ margin: '8px', display: 'flex', flexDirection: 'column' }} key={product.ProductCode}>
+                  <Card
+                    mb={10}
+                    sx={{
+                      maxWidth: 240,
+                      height: '100%',
+                      boxShadow: '0 4px 8px rgba(0, 0, 0, 0.1)',
+                      position: 'relative',
+                    }}
+                  >
+                    <CardMedia
+                      component="img"
+                      alt={product.ProductName[0]}
+                      height="250"
+                      image={product.ProductImage300[0]}
+                    />
+
+                    <CardContent sx={{ paddingBottom: '160px', color: 'black', whiteSpace: 'wrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>
+                      {isLoading && <CircularProgress color="success" />}
+                      <div >
+                       
+                        {product.ProductName[0]}
+                      </div>
+                    </CardContent>
+
+                    <div style={{ position: 'absolute', bottom: 0, left: 0, right: 0, paddingTop: '0px' }}>
+                      <CardContent>
+                        <Stack flexDirection={'row'}>
+                          <Typography color={'gray'} sx={{ marginTop: '4px' }} variant='body1'>
+                            {product.ProductPrice[0]}원
+                          </Typography>
+                          <Typography color={'red'} variant='h6'>
+                            ---  {product.SalePrice[0]}원
+                          </Typography>
+                        </Stack>
+                        <Typography variant='body1'>
+                          Code: {product.ProductCode[0]}
+                        </Typography>
+                      </CardContent>
+
+                      <CardActions>
+                        <IconButton color="secondary" onClick={handleLikeToggle}>
+                          {true ? <FavoriteIcon color='red' /> : <FavoriteBorderIcon />}
+                        </IconButton>
+                        <Button sx={{ flex: 1 }} size="small" variant="contained" color="primary">
+                          <Link to={product.DetailPageUrl[0]} color="white" underline="none">
+                            Detail
+                          </Link>
+                        </Button>
+                        <IconButton onClick={() => handleSave(product)} color="primary">
+                          <AddIcon />
+                        </IconButton>
+                      </CardActions>
+                    </div>
+                  </Card>
+                </div>
+              ))}
             </Stack>
           </Grid>
         </Grid>
       </Box>
-
-      <Dialog open={isAddDialogOpen} onClose={handleCloseAddDialog}>
-        <DialogTitle>Phương thức lưu</DialogTitle>
-        <DialogContent>
-          <Button sx={{ width: '100%', marginBottom: '8px' }} variant="outlined">
-            <Typography>Chỉnh sữa và đăng</Typography>
-          </Button>
-          <Button sx={{ width: '100%', marginBottom: '8px' }} variant="outlined">
-            <Typography>Thêm chỉnh sữa sau</Typography>
-          </Button>
-        </DialogContent>
-        <DialogActions>
-          <Button onClick={handleCloseAddDialog} color="primary" variant="outlined" sx={{ marginRight: '8px' }}>
-            Close
-          </Button>
-          <Button onClick={handleCloseAddDialog} color="primary" variant="contained">
-            Save Changes
-          </Button>
-        </DialogActions>
-      </Dialog>
     </div>
   );
 }

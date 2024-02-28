@@ -1,26 +1,32 @@
-import { Route, Routes, BrowserRouter } from 'react-router-dom';
+import { Route, Routes, BrowserRouter, useHistory } from 'react-router-dom';
 import { publicRouter, privateRouter } from './Router';
 import DashLayout from './Layout/DashboarLayout';
 import { Fragment } from 'react';
-import { useState } from 'react';
-import { useEffect } from 'react';
+import { useState, useEffect } from 'react';
 import { onAuthStateChanged } from 'firebase/auth';
 import { auth } from './firebase';
+
 function App() {
   const [user, setUser] = useState(false);
-   useEffect(()=>{
-     onAuthStateChanged(auth ,(user) =>{
-      if(user){
+  const [isAuthenticated, setIsAuthenticated] = useState(false);
+  
+
+  useEffect(() => {
+    const unsubscribe = onAuthStateChanged(auth, (user) => {
+      if (user) {
         setUser(user);
-       }else{
+        setIsAuthenticated(true);
+      } else {
         setUser(false);
       }
-    })
-   });
+    });
 
-  //  if (user) {
-  //   return   navigate('/home');;
-  // }
+    // Clean up subscription
+    return () => unsubscribe();
+  }, []);
+
+
+
   return (
     <>
       <BrowserRouter>

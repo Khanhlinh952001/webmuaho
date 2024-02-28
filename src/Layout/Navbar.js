@@ -21,7 +21,7 @@ import { signOut } from 'firebase/auth';
 import { useNavigate } from 'react-router-dom';
 import { useState, useEffect } from 'react';
 import Avatar from '@mui/material/Avatar';
-import {ref, child, get } from "firebase/database";
+import { ref, child, get } from "firebase/database";
 import { database } from '../firebase';
 
 
@@ -54,13 +54,12 @@ export default function SearchAppBar() {
   }, [uid]);
 
 
- 
+  console.log(data)
 
   const [anchorEl, setAnchorEl] = React.useState(null);
   const [mobileMoreAnchorEl, setMobileMoreAnchorEl] = React.useState(null);
   const isMenuOpen = Boolean(anchorEl);
   const isMobileMenuOpen = Boolean(mobileMoreAnchorEl);
-
   const updateOpen = useAppStore((state => state.updateOpen));
   const dOpen = useAppStore((state => state.dOpen));
   const handleProfileMenuOpen = (event) => {
@@ -75,6 +74,7 @@ export default function SearchAppBar() {
 
   const handleMenuClose = () => {
     setAnchorEl(null);
+    navigate('/setting');
     handleMobileMenuClose();
   };
 
@@ -92,6 +92,7 @@ export default function SearchAppBar() {
   const menuId = 'primary-search-account-menu';
   const renderMenu = (
     <Menu
+      style={{ marginTop: '50px' }}
       anchorEl={anchorEl}
       anchorOrigin={{
         vertical: 'top',
@@ -106,7 +107,7 @@ export default function SearchAppBar() {
       open={isMenuOpen}
       onClose={handleMenuClose}
     >
-      <MenuItem onClick={handleMenuClose}>Profile</MenuItem>
+      <MenuItem onClick={handleMenuClose}>Settings</MenuItem>
 
       <MenuItem onClick={handleLogOut}>LogOut</MenuItem>
     </Menu>
@@ -129,11 +130,10 @@ export default function SearchAppBar() {
       open={isMobileMenuOpen}
       onClose={handleMobileMenuClose}
     >
-      <MenuItem>
+      <MenuItem >
         <IconButton size="large" aria-label="show 4 new mails" color="inherit">
-          <Badge badgeContent={4} color="error">
-            <MailIcon />
-          </Badge>
+
+          <MailIcon />
         </IconButton>
         <p>Messages</p>
       </MenuItem>
@@ -167,21 +167,22 @@ export default function SearchAppBar() {
             onClick={() => updateOpen(!dOpen)}
           >
             {
-              dOpen ? 
-              <IconButton color='primary'><MdOutlineFilterListOff /></IconButton>
-               : <MdOutlineFilterList />
+              dOpen ?
+                <IconButton color='primary'><MdOutlineFilterListOff /></IconButton>
+                : <MdOutlineFilterList />
             }
           </IconButton>
           <Typography color={'primary'} variant='h5'>
-            Shop
+            {data ? data.storeName : "Loading..."}
           </Typography>
           <Box sx={{ flexGrow: 1 }} />
           <Box sx={{ display: { xs: 'none', md: 'flex' } }}>
-            <IconButton size="large" aria-label="show 4 new mails" color="inherit">
-              <Badge badgeContent={4} color="error">
+            <IconButton size="large" aria-label="show 4 new mails" color="inherit" onClick={()=>navigate('/about')}>
+              <Badge badgeContent={99+'+'} color="error">
                 <MailIcon />
               </Badge>
             </IconButton>
+
             <IconButton
               size="large"
               aria-label="show 17 new notifications"
@@ -200,7 +201,10 @@ export default function SearchAppBar() {
               onClick={handleProfileMenuOpen}
               color="inherit"
             >
-              <Avatar> {data && data.lastName[0].toUpperCase()}</Avatar>
+              <Avatar src={data ? data.image : ''} alt={data ? `${data.lastName} Avatar` : 'User Avatar'}>
+                {data && data.lastName[0].toUpperCase()}
+              </Avatar>
+
               <Typography variant='body1' ml={1}>
                 <Typography variant='body1' ml={1}>
                   {data && data.lastName.toUpperCase()}
@@ -239,42 +243,3 @@ const AppBar = styled(MuiAppBar, {
 
 }));
 
-const Search = styled('div')(({ theme }) => ({
-  position: 'relative',
-  borderRadius: theme.shape.borderRadius,
-  backgroundColor: alpha(theme.palette.common.white, 0.15),
-  '&:hover': {
-    backgroundColor: alpha(theme.palette.common.white, 0.25),
-  },
-  marginRight: theme.spacing(2),
-  marginLeft: 0,
-  width: '100%',
-  [theme.breakpoints.up('sm')]: {
-    marginLeft: theme.spacing(3),
-    width: 'auto',
-  },
-}));
-
-const SearchIconWrapper = styled('div')(({ theme }) => ({
-  padding: theme.spacing(0, 2),
-  height: '100%',
-  position: 'absolute',
-  pointerEvents: 'none',
-  display: 'flex',
-  alignItems: 'center',
-  justifyContent: 'center',
-}));
-
-const StyledInputBase = styled(InputBase)(({ theme }) => ({
-  color: 'inherit',
-  '& .MuiInputBase-input': {
-    padding: theme.spacing(1, 1, 1, 0),
-    // vertical padding + font size from searchIcon
-    paddingLeft: `calc(1em + ${theme.spacing(4)})`,
-    transition: theme.transitions.create('width'),
-    width: '100%',
-    [theme.breakpoints.up('md')]: {
-      width: '20ch',
-    },
-  },
-}));

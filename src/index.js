@@ -1,5 +1,4 @@
 import React from 'react';
-import 'timers-browserify';
 import ReactDOM from 'react-dom/client';
 import './index.css';
 import App from './App';

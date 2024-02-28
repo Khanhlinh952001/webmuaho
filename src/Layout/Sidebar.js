@@ -72,7 +72,7 @@ const Drawer = styled(MuiDrawer, { shouldForwardProp: (prop) => prop !== 'open' 
   );
 
 const menuItems = [
-  { icon: <OtherHousesIcon color='primary' />, text: 'Home', route: '/home' },
+  { icon: <OtherHousesIcon color='primary' />, text: 'Home', route: '/' },
   { icon: <RingVolumeIcon color='primary'  />, text: 'About', route: '/about' },
   { icon: <AddCircleOutlineIcon color='primary' />, text: 'Add', route: '/addProducts' },
   { icon: <AppsIcon color='primary' />, text: 'All', route: '/allProducts' },

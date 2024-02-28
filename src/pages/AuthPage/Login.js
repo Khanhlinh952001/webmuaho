@@ -15,7 +15,7 @@ import { createTheme, ThemeProvider } from '@mui/material/styles';
 import { signInWithEmailAndPassword } from 'firebase/auth';
 import { auth } from '../../firebase';
 import { useNavigate } from 'react-router-dom';
-import { ErrorAlert } from '../../Components/Alert';
+import { ErrorAlert } from '../../Contains/Alert';
 
 
 const defaultTheme = createTheme();
@@ -33,7 +33,7 @@ const Login = () => {
       // Signed in 
       const user = userCredential.user;
       console.log(user);
-      navigate('/home'); // Change '/dashboard' to the desired path
+      navigate('/'); // Change '/dashboard' to the desired path
     } catch (error) {   
      
       const errorCode = error.code;

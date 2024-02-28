@@ -11,16 +11,16 @@ import '../../dash.css';
 import StorefrontIcon from '@mui/icons-material/Storefront';
 import CreditCardIcon from '@mui/icons-material/CreditCard';
 import ShoppingBagIcon from '@mui/icons-material/ShoppingBag'
-import Accordionx from '../../Components/Accordion';
+import Accordionx from '../../Contains/Accordion';
 import BarChart from '../../Charts/BarChars';
 import CountUp from 'react-countup';
-import {SuccessAlert } from '../../Components/Alert';
+import {SuccessAlert } from '../../Contains/Alert';
 import { useEffect,useState } from 'react';
 function Home() {
 
     return (
-        <div style={{ backgroundColor: '#eff1f3' }}>
-            <Box height={40} />
+        <div style={{ backgroundColor: '#eff1f3',paddingTop:'40px' }}>
+           
            <Box sx={{ display: 'flex' }}>
                 <Box component="main" sx={{ flexGrow: 1, p: 3 }}>
                 
