@@ -14,11 +14,39 @@ import Grid from '@mui/material/Grid';
 import Box from '@mui/material/Box';
 import AddPhotoAlternateIcon from '@mui/icons-material/AddPhotoAlternate';
 import IconButton from '@mui/material/IconButton';
+
 import DeleteIcon from '@mui/icons-material/Delete';
 import { NotificationContainer, NotificationManager } from 'react-notifications';
 import 'react-notifications/lib/notifications.css';
 const PRODUCT_PATH = 'Products/';
 const FILE_PATH = 'files/';
+
+
+const translate = async (text, sourceLang, targetLang) => {
+  try {
+    const response = await fetch('https://libretranslate.de/translate', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({
+        q: text,
+        source: sourceLang,
+        target: targetLang,
+      }),
+    });
+
+    if (!response.ok) {
+      throw new Error(`Translation failed with status ${response.status}`);
+    }
+
+    const result = await response.json();
+    return result.translatedText;
+  } catch (error) {
+    console.error('Translation error:', error);
+    throw error; // Rethrow the error for handling in the calling code
+  }
+};
 
 function EditProduct() {
   const { productId } = useParams();
@@ -26,10 +54,7 @@ function EditProduct() {
   const [editedProduct, setEditedProduct] = useState({});
   const [img, setImg] = useState(null);
   const [loading, setLoading] = useState(false);
-  const [snackbarOpen, setSnackbarOpen] = useState(false);
-  const [snackbarSeverity, setSnackbarSeverity] = useState('success');
-  const [snackbarMessage, setSnackbarMessage] = useState('');
-
+  const [translatedProductName, setTranslatedProductName] = useState('');
   useEffect(() => {
     const fetchData = async () => {
       try {
@@ -58,7 +83,7 @@ function EditProduct() {
       const imgRef = storageRef(storage, `${FILE_PATH}${uuidv4()}`);
       const snapshot = await uploadBytes(imgRef, file);
       const url = await getDownloadURL(snapshot.ref);
-
+      NotificationManager.success('Cập nhật thành công', 'Thành Công ', 3000);
       setEditedProduct((prevProduct) => ({
         ...prevProduct,
         ProductImage: [
@@ -69,8 +94,8 @@ function EditProduct() {
           },
         ],
       }));
-       // Show success notification
-       NotificationManager.success('Thêm thành công', 'Success', 3000);
+      // Show success notification
+      NotificationManager.success('Thêm thành công', 'Thành Công', 3000);
     } catch (error) {
       console.error("Lỗi khi tải lên hình ảnh:", error);
     }
@@ -78,7 +103,7 @@ function EditProduct() {
 
   const handleUpdate = async () => {
     try {
-      setLoading(true);
+
 
       let updatedProduct = { ...editedProduct };
 
@@ -94,19 +119,18 @@ function EditProduct() {
       }
 
       await set(ref(database, `${PRODUCT_PATH}${productId}`), updatedProduct);
-      setSnackbarSeverity('success');
-      setSnackbarMessage('Product updated successfully');
-      setSnackbarOpen(true);
-       // Show success notification
-       NotificationManager.success('Cập nhật thành công', 'Thành Công ', 3000);
-      navigate('/allProducts');
+      // Show success notification
+
+      NotificationManager.success('Cập nhật thành công', 'Thành Công ', 1000);
+      setTimeout(() => {
+        navigate('/allProducts');
+      }, 500);
+
+
+
     } catch (error) {
       console.error("Lỗi khi cập nhật sản phẩm:", error);
-
-      setSnackbarSeverity('error');
-      setSnackbarMessage('Error updating product');
       NotificationManager.error('Lỗi khi cập nhật sản phẩm:', 'Lổi', 3000);
-      setSnackbarOpen(true);
     } finally {
       setLoading(false);
     }
@@ -116,54 +140,63 @@ function EditProduct() {
     const updatedImages = (updatedProduct.ProductImage || []).filter(
       (image) => image.id !== imageId
     );
-     // Show success notification
-     NotificationManager.warning('Xoá thành công', 'Xoá', 3000);
+    // Show success notification
+    NotificationManager.warning('Xoá thành công', 'Xoá', 3000);
     setEditedProduct({
       ...updatedProduct,
       ProductImage: updatedImages,
     });
   };
+  const handleTranslation = async () => {
+    try {
+      setLoading(true);
+      const sourceLang = 'ko'; // Replace with the actual source language code
+      const targetLang = 'vi'; // Replace with the actual target language code
+      const translatedText = await translate(editedProduct.ProductName, sourceLang, targetLang);
+      setTranslatedProductName(translatedText);
+      setLoading(false);
+    } catch (error) {
+      NotificationManager.error('Lỗi khi Dịch:', 'Lổi', 3000);
+
+      console.error('Translation error:', error);
+      setLoading(false);
+    }
+  };
+
+
   return (
     <div style={{ backgroundColor: '#eff1f3', height: '100%', padding: '20px', fontSize: '18px' }}>
       <NotificationContainer />
       <Typography pt={2} variant='h5'>Thông tin chi tiết: {editedProduct.ProductCode}</Typography>
-     <Box height={30} />
+      <Box height={30} />
       <Stack>
         <Typography variant='h6' pb={2}>Hình ảnh</Typography>
         <Stack flexDirection={'row'}>
-        {editedProduct.ProductImage &&
-          editedProduct.ProductImage.map((image, index) => (
-            <div key={index} style={{ position: 'relative' }}>
-              <CardMedia
-                component="img"
-                alt={image.id}
-                height="200"
-                sx={{ width: 200, marginRight: 1 }}
-                image={image.url}
-              />
-              <IconButton
-                style={{ position: 'absolute', top: 0, right: 0, color: 'red' }}
-                onClick={() => handleDeleteImage(image.id)}
-              >
-                {/* You can use an icon for delete, for example, the close icon */}
-                <DeleteIcon  />
-              </IconButton>
-            </div>
-          ))}
-        {img && (
-          <CardMedia
-            component="img"
-            alt="New Image"
-            height="200"
-            sx={{ width: 200, marginRight: 1 }}
-            image={URL.createObjectURL(img)}
-          />
-        )}
+          {editedProduct.ProductImage &&
+            editedProduct.ProductImage.map((image, index) => (
+              <div key={index} style={{ position: 'relative' }}>
+                <CardMedia
+                  component="img"
+                  alt={image.id}
+                  height="200"
+                  sx={{ width: 200, marginRight: 1 }}
+                  image={image.url}
+                />
+                <IconButton
+                  style={{ position: 'absolute', top: 0, right: 0, color: 'red' }}
+                  onClick={() => handleDeleteImage(image.id)}
+                >
+
+                  <DeleteIcon />
+                </IconButton>
+              </div>
+            ))}
+
           <Stack justifyContent={'center'} bgcolor={'white'} width={200} textAlign={'center'}>
             <label htmlFor="fileInput" style={{ cursor: 'pointer', borderRadius: '4px' }}>
-             
-                <AddPhotoAlternateIcon style={{fontSize:'80px'}} />
-              
+
+              <AddPhotoAlternateIcon style={{ fontSize: '80px' }} />
+
             </label>
             <input
               type='file'
@@ -186,14 +219,27 @@ function EditProduct() {
           <Grid item xs={2}>
             Tên sản phẩm:
           </Grid>
-          <Grid item xs={10}>
-            <input
-              type="text"
-              style={{ height: '40px', flex: 1, width: '80%', paddingLeft: '10px' }}
-              name="ProductName"
-              value={editedProduct.ProductName ?? ''}
-              onChange={handleInputChange}
-            />
+          <Grid item xs={10} flexDirection={'row'}>
+            <div className='flex'>
+              {
+
+                loading ? <CircularProgress style={{ height: '20px', width: '20px', marginTop: '4px' }} />
+                  : <></>}
+
+              <input
+                type="text"
+                style={{ height: '40px', flex: 1, width: '80%', paddingLeft: '10px' }}
+                name="ProductName"
+                value={editedProduct.ProductName ?? { translatedProductName }}
+                onChange={handleInputChange}
+              />
+
+              <Button ml={2} type="button" variant="outlined" onClick={handleTranslation} >
+                Dịch
+              </Button>
+            </div>
+
+
           </Grid>
 
           <Grid item xs={2}>
@@ -216,12 +262,11 @@ function EditProduct() {
             <input
               type="text"
               name="ProductSales"
-             style={{ height: '40px', flex: 1, width: '80%', paddingLeft: '10px', }}
+              style={{ height: '40px', flex: 1, width: '80%', paddingLeft: '10px', }}
               value={editedProduct.ProductSales ?? ''}
               onChange={handleInputChange}
             />
           </Grid>
-
           <Grid item xs={2}>
             Description:
           </Grid>
@@ -238,13 +283,16 @@ function EditProduct() {
             Display:
           </Grid>
           <Grid item xs={10}>
-            <input
-              type="text"
-              name="Display"
-              style={{ height: '40px', flex: 1, width: '80%', paddingLeft: '10px', }}
+            <select
+              name="Status"
+              style={{ height: '40px', flex: 1, width: '80%', paddingLeft: '10px' }}
               value={editedProduct?.Status ?? ''}
               onChange={handleInputChange}
-            />
+            >
+              <option value="true">True</option>
+              <option value="false">False</option>
+            </select>
+
           </Grid>
         </Grid>
       </Stack>
@@ -254,23 +302,6 @@ function EditProduct() {
           Cập nhật sản phẩm
         </Button>
       </div>
-
-      {loading && <CircularProgress style={{ margin: '20px' }} />}
-
-      <Snackbar
-        open={snackbarOpen}
-        autoHideDuration={6000}
-        onClose={() => setSnackbarOpen(false)}
-      >
-        <MuiAlert
-          elevation={6}
-          variant="filled"
-          severity={snackbarSeverity}
-          onClose={() => setSnackbarOpen(false)}
-        >
-          {snackbarMessage}
-        </MuiAlert>
-        </Snackbar>
     </div>
   );
 }

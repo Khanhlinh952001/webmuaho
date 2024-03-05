@@ -19,6 +19,9 @@ import { auth } from '../../firebase';
 import UpdateIcon from '@mui/icons-material/Update';
 import CloudUploadIcon from '@mui/icons-material/CloudUpload';
 import { useNavigate } from 'react-router-dom';
+import { NotificationContainer, NotificationManager } from 'react-notifications';
+import 'react-notifications/lib/notifications.css';
+
 function AllProducts() {
   const [products, setProducts] = useState([]);
   const [isLoading, setIsLoading] = useState(false);
@@ -77,10 +80,10 @@ function AllProducts() {
     try {
       const dbRef = ref(database);
       const productRef = child(dbRef, `Products/${productId}`);
-
+      NotificationManager.error('Xoá thành công', 'Error', 3000);
       // Delete the product from the database
       await remove(productRef);
-
+      
       // Remove the deleted product from the local state
       setProducts((prevProducts) =>
         prevProducts.filter((product) => product.id !== productId)
@@ -102,6 +105,7 @@ function AllProducts() {
 
   return (
     <div style={{ backgroundColor: '#eff1f3', height: '100%',paddingTop:'40px' }}>
+        <NotificationContainer />
       <Box sx={{ display: 'flex' }}>
         
         <Box component="main" sx={{ flexGrow: 1, p: 3 }}>

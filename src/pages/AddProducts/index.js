@@ -85,7 +85,7 @@ function AddProducts() {
 
   return (
     <div style={{ backgroundColor: '#eff1f3', height: '100%', paddingTop:'40px' }}>
-      <NotificationContainer />
+     <NotificationContainer />
       <Box sx={{ flexGrow: 1 }}>
         <Box height={20} />
         <Grid container spacing={2}>
