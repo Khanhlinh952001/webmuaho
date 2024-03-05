@@ -15,9 +15,10 @@ import { createTheme, ThemeProvider } from '@mui/material/styles';
 import { auth } from '../../firebase';
 import { createUserWithEmailAndPassword } from 'firebase/auth';
 import { useNavigate } from 'react-router-dom';
-import { getDatabase, ref, set } from "firebase/database";
+import {  ref, set } from "firebase/database";
 import { database } from '../../firebase';
-
+import { NotificationContainer, NotificationManager } from 'react-notifications';
+import 'react-notifications/lib/notifications.css';
 const defaultTheme = createTheme();
 
 export default function Register() {
@@ -46,8 +47,17 @@ export default function Register() {
           address: address,
           role: role
         }).then(() => {
-          navigate('/home');
+          setTimeout(() => {
+            NotificationManager.success(`Đăng ký thành công`, 'Success', 1000); // Display for 1 second
+            setTimeout(() => {
+                navigate('/');
+            }, 1000);
+        }, 2000);
+          
+        
+        
         }).catch((error) => {
+          NotificationManager.error('Đăng ký  thành công', 'Error', 3000);
           console.error("Error writing user data: ", error);
         });
       })

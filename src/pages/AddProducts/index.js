@@ -16,15 +16,10 @@ import CardMedia from '@mui/material/CardMedia';
 import Button from '@mui/material/Button';
 import Typography from '@mui/material/Typography';
 import { Link } from 'react-router-dom';
-import { translate } from "@vitalets/google-translate-api";
 import axios from 'axios';
 import xml2js from 'xml2js';
-import TranslateIcon from '@mui/icons-material/Translate';
-import CircularProgress from '@mui/material/CircularProgress';
 import { auth } from '../../firebase';
 import { database } from '../../firebase';
-import { SuccessAlert } from '../../Contains/Alert';
-import { ErrorAlert } from '../../Contains/Alert';
 import { ref, set } from 'firebase/database';
 import { v4 as uuidv4 } from 'uuid';
 import { NotificationContainer, NotificationManager } from 'react-notifications';
@@ -34,15 +29,14 @@ import 'react-notifications/lib/notifications.css';
 function AddProducts() {
   const [searchQuery, setSearchQuery] = useState('');
   const [jsonData, setJsonData] = useState(null);
-  const [isLoading, setIsLoading] = useState(false);
-  const [saveSuccess, setSaveSuccess] = useState(false);
+  
 
   const handleSearchChange = async () => {
     try {
-      setIsLoading(true);
+      
 
       const response = await axios.get(
-        `http://openapi.11st.co.kr/openapi/OpenApiService.tmall?key=23ebb9fd1b66ae392b91870ed7bb4447&apiCode=ProductSearch&keyword=${searchQuery}`
+        `https://openapi.11st.co.kr/openapi/OpenApiService.tmall?key=23ebb9fd1b66ae392b91870ed7bb4447&apiCode=ProductSearch&keyword=${searchQuery}`
       );
 
       xml2js.parseString(response.data, (error, result) => {
@@ -56,26 +50,21 @@ function AddProducts() {
     } catch (error) {
       console.error("Error fetching search results:", error);
     } finally {
-      setIsLoading(false);
+     
     }
   };
-
-
 
   const handleLikeToggle = () => {
     // Implement your like toggle logic here
   };
 
-
-
-
   const handleSave = (product) => {
-    setIsLoading(true);
+   
     const uniqueId = uuidv4();
   
     const images = [
       { id: "image1", url: product.ProductImage300[0] },
-      // Thêm các đối tượng hình ảnh khác nếu cần thiết
+      // Add other image objects if necessary
     ];
   
     set(ref(database, `Products/${uniqueId}`), {
@@ -87,34 +76,20 @@ function AddProducts() {
       ProductSales: product.SalePrice[0],
       Status: "false",
     }).then(() => {
-      setIsLoading(false);
-      setSaveSuccess(true); // Set success state to true
-  
-     // Show success notification
-      NotificationManager.success('Thêm thành công', 'Success', 3000);
+     NotificationManager.success(`Thêm ${product.ProductCode} thành công`, 'Success', 3000);
     }).catch((error) => {
       console.error("Error writing user data: ", error);
-      setIsLoading(false);
-  
-      // Show error notification
       NotificationManager.error('Thêm không thành công', 'Error', 3000);
     });
   };
-  
-
-
-
 
   return (
-    <div style={{ backgroundColor: '#eff1f3', height: '100%',paddingTop:'40px' }}>
-     <NotificationContainer />
+    <div style={{ backgroundColor: '#eff1f3', height: '100%', paddingTop:'40px' }}>
+      <NotificationContainer />
       <Box sx={{ flexGrow: 1 }}>
         <Box height={20} />
-
-
-
         <Grid container spacing={2}>
-          <Grid item xs={8} >
+          <Grid item xs={8}>
             <Stack
               direction={'row'}
               sx={{
@@ -176,9 +151,8 @@ function AddProducts() {
                     />
 
                     <CardContent sx={{ paddingBottom: '160px', color: 'black', whiteSpace: 'wrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>
-                      {isLoading && <CircularProgress color="success" />}
-                      <div >
-                       
+                      
+                      <div>
                         {product.ProductName[0]}
                       </div>
                     </CardContent>
