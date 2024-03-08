@@ -31,48 +31,74 @@ import { parseString } from 'xml2js';
 function AddProducts() {
   const [searchQuery, setSearchQuery] = useState('');
   const [jsonData, setJsonData] = useState(null);
-  const apiKey =process.env.REACT_APP_UNSPLASH_KEY;
- 
-  
+  const apiKey = process.env.REACT_APP_UNSPLASH_KEY;
+
   const handleSearchChange = async () => {
     try {
       const response = await axios.get(`/api?key=${apiKey}&apiCode=ProductSearch&keyword=${searchQuery}`);
-  
+
       if (response.status !== 200) {
         throw new Error(`API request failed with status code ${response.status}`);
       }
-  
+
       const xmlString = response.data; // Extract XML string from response
-  
-      parseString(xmlString, { trim: true }, function (err, result) {
+
+      parseString(xmlString, { trim: true, ignoreAttrs: true }, function (err, result) {
         if (err) {
           throw new Error(`Error parsing XML: ${err.message}`);
         }
+        console.log(result);
         const jsonData = result?.ProductSearchResponse?.Products[0]?.Product || [];
         setJsonData(jsonData);
         NotificationManager.success(`Thành công`, 'Tìm kiếm', 1000);
         console.log(jsonData);
       });
-  
+
     } catch (error) {
       console.error("Error fetching/searching results:", error.message || error);
-    } 
+    } finally {
+      // Any cleanup or finalization code can go here
+    }
   };
-  
+  // const handleSearchChange = async () => {
+  //   try {
+  //     const response = await axios.get(`/api?key=${apiKey}&apiCode=ProductSearch&keyword=${searchQuery}`);
+
+  //     if (response.status !== 200) {
+  //       throw new Error(`API request failed with status code ${response.status}`);
+  //     }
+  //       console.log("re"+response.data)
+  //     // const xmlString = response.data; // Extract XML string from response
+
+  //     // parseString(xmlString, { trim: true }, function (err, result) {
+  //     //   if (err) {
+  //     //     throw new Error(`Error parsing XML: ${err.message}`);
+  //     //   }
+  //     //   const jsonData = result?.ProductSearchResponse?.Products[0]?.Product || [];
+  //     //   setJsonData(jsonData);
+  //     //   NotificationManager.success(`Thành công`, 'Tìm kiếm', 1000);
+  //     //   console.log(jsonData);
+  //     // });
+
+  //   } catch (error) {
+  //     console.error("Error fetching/searching results:", error.message || error);
+  //   } 
+  // };
+
 
   const handleLikeToggle = () => {
     // Implement your like toggle logic here
   };
 
   const handleSave = (product) => {
-   
+
     const uniqueId = uuidv4();
-  
+
     const images = [
       { id: "image1", url: product.ProductImage300[0] },
       // Add other image objects if necessary
     ];
-  
+
     set(ref(database, `Products/${uniqueId}`), {
       storeId: auth.currentUser.uid,
       name: product.ProductName[0],
@@ -83,7 +109,7 @@ function AddProducts() {
       status: "false",
       rating: product.Rating[0],
     }).then(() => {
-     NotificationManager.success(`Thêm ${product.ProductCode[0]} thành công`, 'Success', 3000);
+      NotificationManager.success(`Thêm ${product.ProductCode[0]} thành công`, 'Success', 3000);
     }).catch((error) => {
       console.error("Error writing user data: ", error);
       NotificationManager.error('Thêm không thành công', 'Error', 3000);
@@ -92,8 +118,8 @@ function AddProducts() {
   console.log(jsonData)
 
   return (
-    <div style={{ backgroundColor: '#eff1f3', height: '100%', paddingTop:'40px' }}>
-     <NotificationContainer />
+    <div style={{ backgroundColor: '#eff1f3', height: '100%', paddingTop: '40px' }}>
+      <NotificationContainer />
       <Box sx={{ flexGrow: 1 }}>
         <Box height={20} />
         <Grid container spacing={2}>
@@ -159,7 +185,7 @@ function AddProducts() {
                     />
 
                     <CardContent sx={{ paddingBottom: '160px', color: 'black', whiteSpace: 'wrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>
-                      
+
                       <div>
                         {product.ProductName[0]}
                       </div>
