@@ -24,6 +24,7 @@ import { ref, set } from 'firebase/database';
 import { v4 as uuidv4 } from 'uuid';
 import { NotificationContainer, NotificationManager } from 'react-notifications';
 import 'react-notifications/lib/notifications.css';
+import { promisify } from 'util';
 
 
 function AddProducts() {
@@ -32,29 +33,26 @@ function AddProducts() {
   const apiKey =process.env.REACT_APP_UNSPLASH_KEY;
  
   
-
   const handleSearchChange = async () => {
     try {
-      
-
-      const response = await axios.get(
-        `/api?key=${apiKey}&apiCode=ProductSearch&keyword=${searchQuery}`
-      );
-
-      xml2js.parseString(response.data, { strict: true }, (error, result) => {
-        if (error) {
-          console.error('Error parsing XML:', error);
-        } else {
-          const jsonData = result?.ProductSearchResponse?.Products[0]?.Product || [];
-          setJsonData(jsonData);
-        }
-      });
+      const response = await axios.get(`/api?key=${apiKey}&apiCode=ProductSearch&keyword=${searchQuery}`);
+  
+      if (response.status !== 200) {
+        throw new Error(`API request failed with status code ${response.status}`);
+      }
+  
+      const parseStringAsync = promisify(xml2js.parseString);
+  
+      const result = await parseStringAsync(response.data, { strict: true });
+      const jsonData = result?.ProductSearchResponse?.Products[0]?.Product || [];
+      setJsonData(jsonData);
     } catch (error) {
-      console.error("Error fetching search results:", error);
+      console.error("Error fetching/searching results:", error.message || error);
     } finally {
-     
+      // Any cleanup or finalization code can go here
     }
   };
+  
 
   const handleLikeToggle = () => {
     // Implement your like toggle logic here
