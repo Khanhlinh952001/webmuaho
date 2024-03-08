@@ -127,7 +127,7 @@ function Profile() {
     } catch (error) {
       console.error('Lỗi khi cập nhật người dùng:', error);
       setSnackbarSeverity('error');
-      setSnackbarMessage('Lỗi khi cập nhật người dùng');
+      setSnackbarMessage('Thêm ảnh đại diện ');
       setSnackbarOpen(true);
     } finally {
       setLoading(false);

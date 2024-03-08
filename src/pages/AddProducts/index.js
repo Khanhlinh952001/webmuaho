@@ -29,6 +29,8 @@ import 'react-notifications/lib/notifications.css';
 function AddProducts() {
   const [searchQuery, setSearchQuery] = useState('');
   const [jsonData, setJsonData] = useState(null);
+  const apiKey =process.env.REACT_APP_UNSPLASH_KEY;
+ 
   
 
   const handleSearchChange = async () => {
@@ -36,7 +38,7 @@ function AddProducts() {
       
 
       const response = await axios.get(
-        `https://openapi.11st.co.kr/openapi/OpenApiService.tmall?key=23ebb9fd1b66ae392b91870ed7bb4447&apiCode=ProductSearch&keyword=${searchQuery}`
+        `/api?key=${apiKey}&apiCode=ProductSearch&keyword=${searchQuery}`
       );
 
       xml2js.parseString(response.data, (error, result) => {
@@ -68,20 +70,22 @@ function AddProducts() {
     ];
   
     set(ref(database, `Products/${uniqueId}`), {
-      StoreId: auth.currentUser.uid,
-      ProductName: product.ProductName[0],
-      ProductCode: product.ProductCode[0],
-      ProductImage: images,
-      ProductPrice: product.ProductPrice[0],
-      ProductSales: product.SalePrice[0],
-      Status: "false",
+      storeId: auth.currentUser.uid,
+      name: product.ProductName[0],
+      code: product.ProductCode[0],
+      img: images,
+      price: product.ProductPrice[0],
+      sales: product.SalePrice[0],
+      status: "false",
+      rating: product.Rating[0],
     }).then(() => {
-     NotificationManager.success(`Thêm ${product.ProductCode} thành công`, 'Success', 3000);
+     NotificationManager.success(`Thêm ${product.ProductCode[0]} thành công`, 'Success', 3000);
     }).catch((error) => {
       console.error("Error writing user data: ", error);
       NotificationManager.error('Thêm không thành công', 'Error', 3000);
     });
   };
+  console.log(jsonData)
 
   return (
     <div style={{ backgroundColor: '#eff1f3', height: '100%', paddingTop:'40px' }}>

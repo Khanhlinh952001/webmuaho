@@ -47,12 +47,12 @@ export default function Register() {
           address: address,
           role: role
         }).then(() => {
-          setTimeout(() => {
+          
             NotificationManager.success(`Đăng ký thành công`, 'Success', 1000); // Display for 1 second
             setTimeout(() => {
                 navigate('/');
-            }, 1000);
-        }, 2000);
+            }, 500);
+       
           
         
         
@@ -72,8 +72,8 @@ export default function Register() {
 
   return (
     <ThemeProvider theme={defaultTheme}>
+      <NotificationContainer/>
       <Container component="main" maxWidth="xs">
-      <NotificationContainer />
         <CssBaseline />
         <Box
           sx={{

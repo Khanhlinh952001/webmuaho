@@ -43,7 +43,7 @@ function AllProducts() {
           }));
 
           // Filter products based on matching StoreId with auth.uid
-          const filteredProducts = productsArray.filter(product => auth.currentUser && auth.currentUser.uid === product.StoreId);
+          const filteredProducts = productsArray.filter(product => auth.currentUser && auth.currentUser.uid === product.storeId);
 
           setProducts(filteredProducts);
         } else {
@@ -126,45 +126,49 @@ function AllProducts() {
                    }}
                  
                   >
-                    {product.ProductImage && (
+                    {product.img && (
                       <CardMedia 
                       onClick={() => handleEdit(product.id)}
                         component="img"
-                        alt={product.ProductName}
+                        alt={product.name}
                         height="250"
-                        image={product.ProductImage[0].url}
+                        image={product.img[0].url}
                       />
                     )}
                     <CardContent sx={{ paddingBottom: '160px', color: 'black', whiteSpace: 'wrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>
                       {isLoading && <CircularProgress color="success" />}
-                      <div onClick={handleTranslate}>
+                      <div style={{paddingBottom:"16px"}}>
                        
                         <Typography variant='body1' fontWeight={'bold'}>
-                          {product.ProductName}
+                          {product.name}
                         </Typography>
                          <Typography variant='subtitle1'>
-                        {product.Description}
+                        {product?.desc}
                       </Typography>
                       </div>
                      
                     </CardContent>
 
-                    <div style={{ position: 'absolute', bottom: 0, left: 0, right: 0, paddingTop: '0px' }}>
+                    <div style={{ position: 'absolute', bottom: 0, left: 0, right: 0, paddingTop: '4px' }}>
                       <CardContent>
                         <Typography variant='body1'>
-                          Code: {product.ProductCode}
+                          Code: {product.code}
                         </Typography>
+                       
                         <Typography variant='body1' fontWeight={'bold'}>
-                         Display : {product.Status}
+                         Display : {product.status}
                         </Typography>
                         <Stack flexDirection={'row'} >
                           <Typography color={'gray'} sx={{ marginTop: '4px' }} variant='body1'>
-                            {product.ProductPrice}원
+                            {product.price}원
                           </Typography>
                           <Typography ml={4} color={'red'} variant='h6'>
-                              {product.ProductSales}원
+                              {product.sales}원
                           </Typography>
                         </Stack>
+                        <Typography variant='body1'>
+                          Rating: {product.rating}
+                        </Typography>
                         
                       </CardContent>
 

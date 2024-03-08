@@ -14,7 +14,6 @@ import Grid from '@mui/material/Grid';
 import Box from '@mui/material/Box';
 import AddPhotoAlternateIcon from '@mui/icons-material/AddPhotoAlternate';
 import IconButton from '@mui/material/IconButton';
-
 import DeleteIcon from '@mui/icons-material/Delete';
 import { NotificationContainer, NotificationManager } from 'react-notifications';
 import 'react-notifications/lib/notifications.css';
@@ -86,8 +85,8 @@ function EditProduct() {
       NotificationManager.success('Cập nhật thành công', 'Thành Công ', 3000);
       setEditedProduct((prevProduct) => ({
         ...prevProduct,
-        ProductImage: [
-          ...(prevProduct.ProductImage || []),
+        img: [
+          ...(prevProduct.img || []),
           {
             id: uuidv4(),
             url: url,
@@ -108,13 +107,13 @@ function EditProduct() {
       let updatedProduct = { ...editedProduct };
 
       if (img) {
-        const imageUrlArray = (updatedProduct.ProductImage || []).map((image) => ({
+        const imageUrlArray = (updatedProduct.img || []).map((image) => ({
           id: image.id,
           url: image.url,
         }));
         updatedProduct = {
           ...updatedProduct,
-          ProductImage: imageUrlArray,
+          img: imageUrlArray,
         };
       }
 
@@ -137,14 +136,14 @@ function EditProduct() {
   };
   const handleDeleteImage = (imageId) => {
     const updatedProduct = { ...editedProduct };
-    const updatedImages = (updatedProduct.ProductImage || []).filter(
+    const updatedImages = (updatedProduct.img || []).filter(
       (image) => image.id !== imageId
     );
     // Show success notification
     NotificationManager.warning('Xoá thành công', 'Xoá', 3000);
     setEditedProduct({
       ...updatedProduct,
-      ProductImage: updatedImages,
+      img: updatedImages,
     });
   };
   const handleTranslation = async () => {
@@ -152,7 +151,7 @@ function EditProduct() {
       setLoading(true);
       const sourceLang = 'ko'; // Replace with the actual source language code
       const targetLang = 'vi'; // Replace with the actual target language code
-      const translatedText = await translate(editedProduct.ProductName, sourceLang, targetLang);
+      const translatedText = await translate(editedProduct.name, sourceLang, targetLang);
       setTranslatedProductName(translatedText);
       setLoading(false);
     } catch (error) {
@@ -167,13 +166,13 @@ function EditProduct() {
   return (
     <div style={{ backgroundColor: '#eff1f3', height: '100%', padding: '20px', fontSize: '18px' }}>
       <NotificationContainer />
-      <Typography pt={2} variant='h5'>Thông tin chi tiết: {editedProduct.ProductCode}</Typography>
+      <Typography pt={2} variant='h5'>Thông tin chi tiết: {editedProduct.code}</Typography>
       <Box height={30} />
       <Stack>
         <Typography variant='h6' pb={2}>Hình ảnh</Typography>
         <Stack flexDirection={'row'}>
-          {editedProduct.ProductImage &&
-            editedProduct.ProductImage.map((image, index) => (
+          {editedProduct.img &&
+            editedProduct.img.map((image, index) => (
               <div key={index} style={{ position: 'relative' }}>
                 <CardMedia
                   component="img"
@@ -230,7 +229,7 @@ function EditProduct() {
                 type="text"
                 style={{ height: '40px', flex: 1, width: '80%', paddingLeft: '10px' }}
                 name="ProductName"
-                value={editedProduct.ProductName ?? { translatedProductName }}
+                value={editedProduct.name ?? { translatedProductName }}
                 onChange={handleInputChange}
               />
 
@@ -250,7 +249,7 @@ function EditProduct() {
               type="text"
               name="ProductPrice"
               style={{ height: '40px', flex: 1, width: '80%', paddingLeft: '10px', }}
-              value={editedProduct.ProductPrice ?? ''}
+              value={editedProduct.price ?? ''}
               onChange={handleInputChange}
             />
           </Grid>
@@ -263,7 +262,7 @@ function EditProduct() {
               type="text"
               name="ProductSales"
               style={{ height: '40px', flex: 1, width: '80%', paddingLeft: '10px', }}
-              value={editedProduct.ProductSales ?? ''}
+              value={editedProduct.sales ?? ''}
               onChange={handleInputChange}
             />
           </Grid>
@@ -275,8 +274,23 @@ function EditProduct() {
               type="text"
               name="Description"
               style={{ height: '40px', flex: 1, width: '80%', paddingLeft: '10px', }}
-              value={editedProduct?.Description ?? ''}
+              value={editedProduct?.desc ?? 'Chưa có thông tin chi tiết'}
               onChange={handleInputChange}
+            />
+          </Grid>
+
+          <Grid item xs={2}>
+            Rating:
+          </Grid>
+          <Grid item xs={10}>
+            <input
+              type="number"
+              name="rating"
+              style={{ height: '40px', flex: 1, width: '80%', paddingLeft: '10px' }}
+              value={editedProduct.rating || ''}
+              onChange={handleInputChange}
+              max={5} // Set maximum value to 5
+              min={0} // Set minimum value to 0
             />
           </Grid>
           <Grid item xs={2}>
@@ -284,9 +298,9 @@ function EditProduct() {
           </Grid>
           <Grid item xs={10}>
             <select
-              name="Status"
+              name="status"
               style={{ height: '40px', flex: 1, width: '80%', paddingLeft: '10px' }}
-              value={editedProduct?.Status ?? ''}
+              value={editedProduct?.status ?? ''}
               onChange={handleInputChange}
             >
               <option value="true">True</option>
