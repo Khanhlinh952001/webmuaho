@@ -25,6 +25,7 @@ import { v4 as uuidv4 } from 'uuid';
 import { NotificationContainer, NotificationManager } from 'react-notifications';
 import 'react-notifications/lib/notifications.css';
 import { promisify } from 'util';
+import { parseString } from 'xml2js';
 
 
 function AddProducts() {
@@ -41,16 +42,21 @@ function AddProducts() {
         throw new Error(`API request failed with status code ${response.status}`);
       }
   
-      const parseStringAsync = promisify(xml2js.parseString);
+      const xmlString = response.data; // Extract XML string from response
   
-      const result = await parseStringAsync(response.data, { strict: true });
-      const jsonData = result?.ProductSearchResponse?.Products[0]?.Product || [];
-      setJsonData(jsonData);
+      parseString(xmlString, { trim: true }, function (err, result) {
+        if (err) {
+          throw new Error(`Error parsing XML: ${err.message}`);
+        }
+        const jsonData = result?.ProductSearchResponse?.Products[0]?.Product || [];
+        setJsonData(jsonData);
+        NotificationManager.success(`Thành công`, 'Tìm kiếm', 1000);
+        console.log(jsonData);
+      });
+  
     } catch (error) {
       console.error("Error fetching/searching results:", error.message || error);
-    } finally {
-      // Any cleanup or finalization code can go here
-    }
+    } 
   };
   
 
