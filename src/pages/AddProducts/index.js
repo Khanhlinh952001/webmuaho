@@ -41,7 +41,7 @@ function AddProducts() {
         `/api?key=${apiKey}&apiCode=ProductSearch&keyword=${searchQuery}`
       );
 
-      xml2js.parseString(response.data, (error, result) => {
+      xml2js.parseString(response.data, { strict: true }, (error, result) => {
         if (error) {
           console.error('Error parsing XML:', error);
         } else {
