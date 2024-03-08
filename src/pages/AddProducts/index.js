@@ -41,49 +41,33 @@ function AddProducts() {
         throw new Error(`API request failed with status code ${response.status}`);
       }
 
-      const xmlString = response.data; // Extract XML string from response
+      const contentType = response.headers['content-type'];
 
-      parseString(xmlString, { trim: true, ignoreAttrs: true }, function (err, result) {
-        if (err) {
-          throw new Error(`Error parsing XML: ${err.message}`);
-        }
-        console.log(result);
-        const jsonData = result?.ProductSearchResponse?.Products[0]?.Product || [];
-        setJsonData(jsonData);
-        NotificationManager.success(`Thành công`, 'Tìm kiếm', 1000);
-        console.log(jsonData);
-      });
-
+      if (contentType && contentType.includes('application/json')) {
+        // Response is in JSON format
+        const responseData = response.data;
+        console.log(responseData);
+      } else {
+        // Response is not in JSON format
+        parseString(response.data,  function (err, result) {
+          if (err) {
+            throw new Error(`Error parsing XML: ${err.message}`);
+          }
+          const jsonData = result?.ProductSearchResponse?.Products[0]?.Product || [];
+          setJsonData(jsonData);
+          NotificationManager.success(`Thành công`, 'Tìm kiếm', 1000);
+          console.log(jsonData);
+        });
+        console.log("Non-JSON Response:", response.data);
+      }
     } catch (error) {
       console.error("Error fetching/searching results:", error.message || error);
     } finally {
       // Any cleanup or finalization code can go here
     }
   };
-  // const handleSearchChange = async () => {
-  //   try {
-  //     const response = await axios.get(`/api?key=${apiKey}&apiCode=ProductSearch&keyword=${searchQuery}`);
 
-  //     if (response.status !== 200) {
-  //       throw new Error(`API request failed with status code ${response.status}`);
-  //     }
-  //       console.log("re"+response.data)
-  //     // const xmlString = response.data; // Extract XML string from response
-
-  //     // parseString(xmlString, { trim: true }, function (err, result) {
-  //     //   if (err) {
-  //     //     throw new Error(`Error parsing XML: ${err.message}`);
-  //     //   }
-  //     //   const jsonData = result?.ProductSearchResponse?.Products[0]?.Product || [];
-  //     //   setJsonData(jsonData);
-  //     //   NotificationManager.success(`Thành công`, 'Tìm kiếm', 1000);
-  //     //   console.log(jsonData);
-  //     // });
-
-  //   } catch (error) {
-  //     console.error("Error fetching/searching results:", error.message || error);
-  //   } 
-  // };
+ 
 
 
   const handleLikeToggle = () => {
