@@ -35,19 +35,7 @@ function AddProducts() {
 
   const handleSearchChange = async () => {
     try {
-      const response = await axios.get(`/api?key=${apiKey}&apiCode=ProductSearch&keyword=${searchQuery}`);
-
-      if (response.status !== 200) {
-        throw new Error(`API request failed with status code ${response.status}`);
-      }
-
-      const contentType = response.headers['content-type'];
-
-      if (contentType && contentType.includes('application/json')) {
-        // Response is in JSON format
-        const responseData = response.data;
-        console.log(responseData);
-      } else {
+      const response = await axios.get(`https://app-service-nine.vercel.app/api?key=${apiKey}&apiCode=ProductSearch&keyword=${searchQuery}`);
         // Response is not in JSON format
         parseString(response.data,  function (err, result) {
           if (err) {
@@ -58,8 +46,8 @@ function AddProducts() {
           NotificationManager.success(`Thành công`, 'Tìm kiếm', 1000);
           console.log(jsonData);
         });
-        console.log("Non-JSON Response:", response.data);
-      }
+     
+      
     } catch (error) {
       console.error("Error fetching/searching results:", error.message || error);
     } finally {
