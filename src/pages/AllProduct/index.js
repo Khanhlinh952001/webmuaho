@@ -27,6 +27,7 @@ function AllProducts() {
   const [isLoading, setIsLoading] = useState(false);
   const dbRef = database;
   const navigate = useNavigate();
+  
   useEffect(() => {
     const fetchData = async () => {
       try {

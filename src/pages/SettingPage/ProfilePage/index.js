@@ -1,48 +1,45 @@
-import React, { useState, useEffect } from 'react';
-import { ref, child, get, update } from 'firebase/database';
-import { auth, database, storage } from '../../../firebase'; // Giả sử storage và storageRef đã được định nghĩa trong cấu hình Firebase của bạn
-import Grid from '@mui/material/Grid';
-import Typography from '@mui/material/Typography';
-import CardMedia from '@mui/material/CardMedia';
-import AddPhotoAlternateIcon from '@mui/icons-material/AddPhotoAlternate';
-import Stack from '@mui/material/Stack';
-import Box from '@mui/material/Box';
-import Button from '@mui/material/Button';
-import Snackbar from '@mui/material/Snackbar';
-import MuiAlert from '@mui/material/Alert';
-import CircularProgress from '@mui/material/CircularProgress';
-import { uploadBytes, getDownloadURL, ref as Ref } from 'firebase/storage';
-import { v4 as uuidv4 } from 'uuid';
+import React, { useState, useEffect } from "react";
+import { ref, child, get, update } from "firebase/database";
+import { auth, database, storage } from "../../../firebase";
+import Grid from "@mui/material/Grid";
+import Typography from "@mui/material/Typography";
+import CardMedia from "@mui/material/CardMedia";
+import AddPhotoAlternateIcon from "@mui/icons-material/AddPhotoAlternate";
+import Stack from "@mui/material/Stack";
+import Box from "@mui/material/Box";
+import Button from "@mui/material/Button";
+import Snackbar from "@mui/material/Snackbar";
+import MuiAlert from "@mui/material/Alert";
+import CircularProgress from "@mui/material/CircularProgress";
+import { uploadBytes, getDownloadURL, ref as Ref } from "firebase/storage";
+import { v4 as uuidv4 } from "uuid";
+import {
+  NotificationContainer,
+  NotificationManager,
+} from "react-notifications";
 
-const FILE_PATH = 'userAvarter';
+const FILE_PATH = "userAvarter";
 
 function Profile() {
-  // State cho dữ liệu người dùng và dữ liệu form
+  const [img, setImg] = useState(null);
+  const [avatar, setAvatar] = useState(null);
+  const [loading, setLoading] = useState(false);
   const [data, setData] = useState(null);
   const [formData, setFormData] = useState({
-    email: '',
-    password: '',
-    firstName: '',
-    lastName: '',
-    storeName: '',
-    address: '',
+    email: "",
+    password: "",
+    firstName: "",
+    lastName: "",
+    storeName: "",
+    address: "",
+    tikiKey: "",
+    lazadaKey: "",
+    shoppeKey: "", // Fixed typo here
   });
 
-  // Ref đến database và uid của người dùng hiện tại
   const dbRef = ref(database);
   const uid = auth.currentUser?.uid;
 
-  // State cho hình ảnh và avatar
-  const [img, setImg] = useState(null);
-  const [avatar, setAvatar] = useState(null);
-
-  // State cho trạng thái loading và thông báo
-  const [loading, setLoading] = useState(false);
-  const [snackbarOpen, setSnackbarOpen] = useState(false);
-  const [snackbarSeverity, setSnackbarSeverity] = useState('');
-  const [snackbarMessage, setSnackbarMessage] = useState('');
-
-  // Hàm xử lý khi chọn hình ảnh
   const handleClick = async (file) => {
     try {
       setImg(file);
@@ -55,7 +52,6 @@ function Profile() {
     }
   };
 
-  // Effect hook để fetch dữ liệu người dùng khi component mount
   useEffect(() => {
     const fetchData = async () => {
       try {
@@ -63,14 +59,16 @@ function Profile() {
           const snapshot = await get(child(dbRef, `users/${uid}`));
           if (snapshot.exists()) {
             setData(snapshot.val());
-            // Đặt giá trị mặc định cho form dựa trên dữ liệu người dùng
             setFormData({
-              email: snapshot.val()?.email || '',
-              password: snapshot.val()?.password || '',
-              firstName: snapshot.val()?.firstName || '',
-              lastName: snapshot.val()?.lastName || '',
-              storeName: snapshot.val()?.storeName || '',
-              address: snapshot.val()?.address || '',
+              email: snapshot.val()?.email || "",
+              password: snapshot.val()?.password || "",
+              firstName: snapshot.val()?.firstName || "",
+              lastName: snapshot.val()?.lastName || "",
+              storeName: snapshot.val()?.storeName || "",
+              address: snapshot.val()?.address || "",
+              lazadaKey: snapshot.val()?.lazadaKey || "",
+              shoppeKey: snapshot.val()?.shoppeKey || "",
+              tikiKey: snapshot.val()?.tikiKey || "",
             });
           } else {
             console.log("Không có dữ liệu");
@@ -83,28 +81,23 @@ function Profile() {
 
     fetchData();
 
-    // Cleanup function để hủy đăng ký bất kỳ listener hoặc tác vụ async nào
     return () => {
-      // Các công việc cleanup nếu cần
+      // Cleanup function
     };
   }, [uid]);
 
-  // Hàm xử lý khi input thay đổi
   const handleInputChange = (event) => {
     const { name, value } = event.target;
-    // Cập nhật giá trị form dựa trên input thay đổi
     setFormData((prevData) => ({
       ...prevData,
       [name]: value,
     }));
   };
 
-  // Hàm xử lý khi ấn nút cập nhật
   const handleUpdate = async () => {
     try {
       setLoading(true);
       if (uid) {
-        // Cập nhật dữ liệu người dùng trong database
         await update(child(dbRef, `users/${uid}`), {
           email: formData.email,
           password: formData.password,
@@ -112,33 +105,32 @@ function Profile() {
           lastName: formData.lastName,
           storeName: formData.storeName,
           address: formData.address,
+          lazadaKey: formData.lazadaKey,
+          shoppeKey: formData.shoppeKey, // Fixed typo here
+          tikiKey: formData.tikiKey,
           image: avatar || data?.image,
         });
-        setSnackbarSeverity('success');
-        setSnackbarMessage('Cập nhật thành công');
-        window.location.reload();
-        setSnackbarOpen(true);
+        NotificationManager.success(`Cập nhật thành công`, "Cập nhật", 3000);
       } else {
-        console.error('Không có ID người dùng');
-        setSnackbarSeverity('error');
-        setSnackbarMessage('Lỗi khi cập nhật người dùng');
-        setSnackbarOpen(true);
+        console.error("Không có ID người dùng");
+        NotificationManager.error("Không thành công", "Lỗi", 3000);
       }
     } catch (error) {
-      console.error('Lỗi khi cập nhật người dùng:', error);
-      setSnackbarSeverity('error');
-      setSnackbarMessage('Thêm ảnh đại diện ');
-      setSnackbarOpen(true);
+      console.error("Lỗi khi cập nhật người dùng:", error);
+      NotificationManager.error("Không thành công", "Lỗi", 3000);
     } finally {
       setLoading(false);
     }
   };
 
   return (
-    <div style={{ backgroundColor: '#eff1f3', height: '100%', paddingTop: '40px' }}>
+    <div style={{ backgroundColor: "#eff1f3", height: "100%", paddingTop: "40px" }}>
       <Stack>
-        <Typography variant='h6' pb={2}>Cài đặt thông tin</Typography>
-        <Stack flexDirection={'row'}>
+        <NotificationContainer />
+        <Typography variant="h6" pb={2}>
+          Cài đặt thông tin
+        </Typography>
+        <Stack flexDirection={"row"}>
           <CardMedia
             component="img"
             alt="Hình ảnh mới"
@@ -146,16 +138,24 @@ function Profile() {
             sx={{ width: 200, marginRight: 1 }}
             image={data?.image || avatar}
           />
-          <Stack justifyContent={'center'} bgcolor={'white'} width={200} textAlign={'center'}>
-            <label htmlFor="fileInput" style={{ cursor: 'pointer', borderRadius: '4px' }}>
-             <AddPhotoAlternateIcon style={{ fontSize: '80px' }} />
+          <Stack
+            justifyContent={"center"}
+            bgcolor={"white"}
+            width={200}
+            textAlign={"center"}
+          >
+            <label
+              htmlFor="fileInput"
+              style={{ cursor: "pointer", borderRadius: "4px" }}
+            >
+              <AddPhotoAlternateIcon style={{ fontSize: "80px" }} />
             </label>
             <input
-              type='file'
+              type="file"
               id="fileInput"
               onChange={(event) => handleClick(event.target.files[0])}
               accept="image/*"
-              style={{ display: 'none' }}
+              style={{ display: "none" }}
             />
           </Stack>
         </Stack>
@@ -171,7 +171,12 @@ function Profile() {
           <Grid item xs={10}>
             <input
               type="text"
-              style={{ height: '40px', flex: 1, width: '80%', paddingLeft: '10px' }}
+              style={{
+                height: "40px",
+                flex: 1,
+                width: "80%",
+                paddingLeft: "10px",
+              }}
               name="storeName"
               value={formData.storeName}
               onChange={handleInputChange}
@@ -183,7 +188,12 @@ function Profile() {
           <Grid item xs={10}>
             <input
               type="text"
-              style={{ height: '40px', flex: 1, width: '80%', paddingLeft: '10px' }}
+              style={{
+                height: "40px",
+                flex: 1,
+                width: "80%",
+                paddingLeft: "10px",
+              }}
               name="address"
               value={formData.address}
               onChange={handleInputChange}
@@ -195,7 +205,12 @@ function Profile() {
           <Grid item xs={10}>
             <input
               type="text"
-              style={{ height: '40px', flex: 1, width: '80%', paddingLeft: '10px' }}
+              style={{
+                height: "40px",
+                flex: 1,
+                width: "80%",
+                paddingLeft: "10px",
+              }}
               name="email"
               value={formData.email}
               onChange={handleInputChange}
@@ -208,52 +223,106 @@ function Profile() {
             <input
               type="password"
               name="password"
-              style={{ height: '40px', flex: 1, width: '80%', paddingLeft: '10px' }}
+              style={{
+                height: "40px",
+                flex: 1,
+                width: "80%",
+                paddingLeft: "10px",
+              }}
               value={formData.password}
+              onChange={handleInputChange}
+            />
+          </Grid>
+          <Grid item xs={2}>
+            Lazada_Key*:
+          </Grid>
+          <Grid item xs={10}>
+            <input
+              type="password"
+              name="lazadaKey"
+              style={{
+                height: "40px",
+                flex: 1,
+                width: "80%",
+                paddingLeft: "10px",
+              }}
+              value={formData.lazadaKey}
+              onChange={handleInputChange}
+            />
+          </Grid>
+          <Grid item xs={2}>
+            Shoppe_Key*:
+          </Grid>
+          <Grid item xs={10}>
+            <input
+              type="password"
+              name="shoppeKey"
+              style={{
+                height: "40px",
+                flex: 1,
+                width: "80%",
+                paddingLeft: "10px",
+              }}
+              value={formData.shoppeKey}
+              onChange={handleInputChange}
+            />
+          </Grid>
+          <Grid item xs={2}>
+            Tiki_Key*:
+          </Grid>
+          <Grid item xs={10}>
+            <input
+              type="password"
+              name="tikiKey"
+              style={{
+                height: "40px",
+                flex: 1,
+                width: "80%",
+                paddingLeft: "10px",
+              }}
+              value={formData.tikiKey}
               onChange={handleInputChange}
             />
           </Grid>
           <Grid item xs={2}>
             Name:
           </Grid>
-          <Grid item xs={10} flexDirection={'row'}>
+          <Grid item xs={10} flexDirection={"row"}>
             <input
               type="text"
               name="firstName"
-              style={{ height: '40px', flex: 1, width: '40%', paddingLeft: '10px' }}
+              style={{
+                height: "40px",
+                flex: 1,
+                width: "40%",
+                paddingLeft: "10px",
+              }}
               value={formData.firstName}
               onChange={handleInputChange}
             />
             <input
               type="text"
               name="lastName"
-              style={{ height: '40px', flex: 1, width: '40%', paddingLeft: '10px' }}
+              style={{
+                height: "40px",
+                flex: 1,
+                width: "40%",
+                paddingLeft: "10px",
+              }}
               value={formData.lastName}
               onChange={handleInputChange}
             />
           </Grid>
         </Grid>
 
-        <Button style={{marginTop:'20px'}} type="button" variant="outlined" onClick={handleUpdate}>
+        <Button
+          style={{ marginTop: "20px" }}
+          type="button"
+          variant="outlined"
+          onClick={handleUpdate}
+        >
           Cập nhật sản phẩm
         </Button>
-
-        {loading && <CircularProgress style={{ margin: '20px' }} />}
-
-        <Snackbar
-          open={snackbarOpen}
-          autoHideDuration={6000}
-          onClose={() => setSnackbarOpen(false)}
-        >
-          <MuiAlert
-            elevation={6}
-            variant="filled"
-            severity={snackbarSeverity}
-            onClose={() => setSnackbarOpen(false)}
-          >
-            {snackbarMessage}
-          </MuiAlert>
-        </Snackbar>
       </Stack>
     </div>
   );

@@ -5,8 +5,7 @@ import { ref as storageRef, getDownloadURL, uploadBytes } from 'firebase/storage
 import { database, storage } from '../firebase';
 import { v4 as uuidv4 } from 'uuid';
 import CardMedia from '@mui/material/CardMedia';
-import { CircularProgress, Snackbar } from '@mui/material';
-import MuiAlert from '@mui/material/Alert';
+import { CircularProgress } from '@mui/material';
 import Typography from '@mui/material/Typography';
 import Button from '@mui/material/Button';
 import Stack from '@mui/material/Stack';
@@ -17,6 +16,7 @@ import IconButton from '@mui/material/IconButton';
 import DeleteIcon from '@mui/icons-material/Delete';
 import { NotificationContainer, NotificationManager } from 'react-notifications';
 import 'react-notifications/lib/notifications.css';
+import { auth } from '../firebase';
 const PRODUCT_PATH = 'Products/';
 const FILE_PATH = 'files/';
 
@@ -54,6 +54,36 @@ function EditProduct() {
   const [img, setImg] = useState(null);
   const [loading, setLoading] = useState(false);
   const [translatedProductName, setTranslatedProductName] = useState('');
+  const [user, setUser] = useState(null);
+  const uid = auth.currentUser?.uid;
+  const dbRef = ref(database);
+ 
+  useEffect(() => {
+    const fetchData = async () => {
+      try {
+        if (uid) {
+          const snapshot = await get(child(dbRef, `users/${uid}`));
+          if (snapshot.exists()) {
+            setUser(snapshot.val());
+          } else {
+            console.log("Không có dữ liệu");
+          }
+        }
+      } catch (error) {
+        console.error(error);
+      }
+    };
+
+    fetchData();
+
+    // Cleanup function để hủy đăng ký bất kỳ listener hoặc tác vụ async nào
+    return () => {
+      // Các công việc cleanup nếu cần
+    };
+  }, [uid]);
+
+
+  console.log("TIKI"+user?.tikiKey)
   useEffect(() => {
     const fetchData = async () => {
       try {
@@ -223,7 +253,8 @@ function EditProduct() {
               {
 
                 loading ? <CircularProgress style={{ height: '20px', width: '20px', marginTop: '4px' }} />
-                  : <></>}
+                  : <></>
+                  }
 
               <input
                 type="text"
