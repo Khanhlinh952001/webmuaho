@@ -25,9 +25,8 @@ import 'react-notifications/lib/notifications.css';
 function AllProducts() {
   const [products, setProducts] = useState([]);
   const [isLoading, setIsLoading] = useState(false);
-  const dbRef = database;
   const navigate = useNavigate();
-  
+
   useEffect(() => {
     const fetchData = async () => {
       try {
@@ -58,16 +57,8 @@ function AllProducts() {
     fetchData();
   }, [auth.currentUser]);
 
-  const handleTranslate = () => {
-    // Implement translation logic here
-  };
-
-  const handleLikeToggle = () => {
-    // Implement like toggle logic here
-  };
 
   const handleSave = (product) => {
-    // Implement save logic here
   };
 
   const handleEdit = (productId) => {
@@ -75,16 +66,14 @@ function AllProducts() {
     navigate(`/edit/${productId}`);
   };
 
-
-
   const handleDelete = async (productId) => {
     try {
       const dbRef = ref(database);
       const productRef = child(dbRef, `Products/${productId}`);
-      NotificationManager.error('Xoá thành công', 'Error', 3000);
+      NotificationManager.error('Xoá thành công', 'Xoá', 3000);
       // Delete the product from the database
       await remove(productRef);
-      
+
       // Remove the deleted product from the local state
       setProducts((prevProducts) =>
         prevProducts.filter((product) => product.id !== productId)
@@ -96,23 +85,16 @@ function AllProducts() {
     }
   };
 
-  // ... rest of the component
-
-
-  const handleUpdate = (productId) => {
-    // Implement update logic here
-  };
-  console.log(products)
+  
 
   return (
-    <div style={{ backgroundColor: '#eff1f3', height: '100%',paddingTop:'40px' }}>
-        <NotificationContainer />
+    <div style={{ backgroundColor: '#eff1f3', height: '100%', paddingTop: '40px' }}>
+      <NotificationContainer />
       <Box sx={{ display: 'flex' }}>
-        
         <Box component="main" sx={{ flexGrow: 1, p: 3 }}>
           <Typography variant='h5'>
-           Tất cả sản phẩm 
-        </Typography>
+            Tất cả sản phẩm
+          </Typography>
           <Grid item xs={12} mt={4}>
             <Stack ml={4} direction="row" justifyContent="start" flexWrap="wrap">
               {products.map((product) => (
@@ -124,70 +106,69 @@ function AllProducts() {
                       height: '100%',
                       boxShadow: '0 4px 8px rgba(0, 0, 0, 0.1)',
                       position: 'relative',
-                   }}
-                 
+                    }}
                   >
                     {product.img && (
-                      <CardMedia 
-                      onClick={() => handleEdit(product.id)}
+                      <CardMedia
+                        onClick={() => handleEdit(product.id)}
                         component="img"
                         alt={product.name}
                         height="250"
                         image={product.img[0].url}
                       />
                     )}
-                    <CardContent sx={{ paddingBottom: '160px', color: 'black', whiteSpace: 'wrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>
+                    <CardContent sx={{ paddingBottom: '10px', color: 'black', whiteSpace: 'wrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>
                       {isLoading && <CircularProgress color="success" />}
-                      <div style={{paddingBottom:"16px"}}>
-                       
+                      <div style={{ paddingBottom: "16px" }}>
                         <Typography variant='body1' fontWeight={'bold'}>
                           {product.name}
                         </Typography>
-                         <Typography variant='subtitle1'>
-                        {product?.desc}
-                      </Typography>
+                        <Typography variant='subtitle1'>
+                          {product?.desc}
+                        </Typography>
                       </div>
-                     
                     </CardContent>
 
-                    <div style={{ position: 'absolute', bottom: 0, left: 0, right: 0, paddingTop: '4px' }}>
+                    <div >
                       <CardContent>
                         <Typography variant='body1'>
                           Code: {product.code}
                         </Typography>
-                       
                         <Typography variant='body1' fontWeight={'bold'}>
-                         Display : {product.status}
+                          Home Display : {product.status}
+                        </Typography>
+                        <Typography variant='body1' fontWeight={'bold'}>
+                          Shoppe Display : {product.shoppeDisplay}
+                        </Typography>
+                        <Typography variant='body1' fontWeight={'bold'}>
+                          Tiki Display : {product.tikiDisplay}
+                        </Typography>
+                        <Typography variant='body1' fontWeight={'bold'}>
+                          Lazada Display : {product.ladadaDisplay}
                         </Typography>
                         <Stack flexDirection={'row'} >
                           <Typography color={'gray'} sx={{ marginTop: '4px' }} variant='body1'>
                             {product.price}원
                           </Typography>
                           <Typography ml={4} color={'red'} variant='h6'>
-                              {product.sales}원
+                            {product.sales}원
                           </Typography>
                         </Stack>
                         <Typography variant='body1'>
                           Rating: {product.rating}
                         </Typography>
-                        
                       </CardContent>
 
-                      <CardActions>
-                        <IconButton onClick={() => handleSave(product)} color="primary">
+                      <CardActions style={{display:'flex',justifyContent:'space-around'}}>
+                        <IconButton onClick={() => handleSave(product.id)} color="primary">
                           <AddIcon />
                         </IconButton>
-                        <IconButton onClick={() => handleEdit(product.id)} color="primary">
-                          <EditIcon />
-                        </IconButton>
+                        
                         <IconButton onClick={() => handleDelete(product.id)} color="primary">
                           <DeleteIcon />
                         </IconButton>
-                        <IconButton onClick={() => handleUpdate(product.id)} color="primary">
-                          <UpdateIcon />
-                        </IconButton>
-                        <IconButton onClick={() => handleUpdate(product.id)} color="primary">
-                          <CloudUploadIcon />
+                        <IconButton onClick={() => handleEdit(product.id)} color="primary">
+                          <EditIcon />
                         </IconButton>
                       </CardActions>
                     </div>

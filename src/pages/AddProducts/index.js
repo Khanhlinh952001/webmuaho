@@ -83,6 +83,9 @@ function AddProducts() {
       img: images,
       price: product.ProductPrice[0],
       sales: product.SalePrice[0],
+      ladadaDisplay:"false",
+      tikiDisplay: "false",
+      shoppeDisplay:"false",
       status: "false",
       rating: product.Rating[0],
     })
