@@ -1,11 +1,11 @@
-import SearchAppBar from "../Navbar";
+import NavBar from "../Navbar";
 import Sidebar from "../Sidebar";
 import Box from '@mui/material/Box';
 
 function DashLayout({ children }) {
     return (
         <div>
-            <SearchAppBar />
+            <NavBar />
             <Box height={20} />
             <Box sx={{ display: 'flex' }}>
                 <Sidebar />
