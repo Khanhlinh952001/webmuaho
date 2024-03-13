@@ -1,11 +1,11 @@
-import About from "../pages/aboutPage/about"
-import SettingTabs from "../pages/settingPage"
-import Register from "../pages/authPage/Register"
-import Login from "../pages/authPage/Login";
-import AddProduct from "../pages/addProducts";
-import AllProducts from "../pages/allProduct";
+import About from "../pages/AboutPage/about"
+import SettingTabs from "../pages/SettingPage"
+import Register from "../pages/AuthPage/Register"
+import Login from "../pages/AuthPage/Login";
+import AddProduct from "../pages/AddProducts";
+import AllProducts from "../pages/AllProduct";
 import EditProduct from "../Components/ EditProduct";
-import HomeTabs from "../pages/homePage";
+import HomeTabs from "../pages/HomePage";
 const publicRouter = [
     { path: "/", component: Login, layout: null },
     { path: "/register", component: Register, layout: null }
