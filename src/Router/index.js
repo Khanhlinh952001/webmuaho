@@ -1,4 +1,3 @@
-import Home from "../pages/homePage/all/home"
 import About from "../pages/aboutPage/about"
 import SettingTabs from "../pages/settingPage"
 import Register from "../pages/authPage/Register"

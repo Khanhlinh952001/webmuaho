@@ -1,5 +1,5 @@
-import { Route, Routes, BrowserRouter, useHistory } from 'react-router-dom';
-import { publicRouter, privateRouter } from './router';
+import { Route, Routes, BrowserRouter } from 'react-router-dom';
+import { publicRouter, privateRouter } from './Router';
 import DashLayout from './layout/dashboarLayout';
 import { Fragment } from 'react';
 import { useState, useEffect } from 'react';
