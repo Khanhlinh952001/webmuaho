@@ -152,7 +152,7 @@ function AddProducts() {
             </Stack>
           </Grid>
 
-          <Grid item xs={12} mt={4}>
+          <Grid item xs={12} mt={4} style={{height:'100vh' }}>
             <Stack
               ml={4}
               direction="row"

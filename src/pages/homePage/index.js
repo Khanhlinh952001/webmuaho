@@ -4,8 +4,8 @@ import Tab from '@mui/material/Tab';
 import TabContext from '@mui/lab/TabContext';
 import TabList from '@mui/lab/TabList';
 import TabPanel from '@mui/lab/TabPanel';
-import Profile from './ProfilePage';
-export default function SettingTabs() {
+import Home from './all/home';
+export default function HomeTabs() {
   const [value, setValue] = React.useState('1');
 
   const handleChange = (event, newValue) => {
@@ -18,14 +18,17 @@ export default function SettingTabs() {
       <TabContext value={value}>
         <Box sx={{ borderBottom: 1, borderColor: 'divider' }}>
           <TabList onChange={handleChange} aria-label="lab API tabs example">
-            <Tab label="Thông tin cá nhân" value="1" />
-            {/* <Tab label="Item Two" value="2" />
-            <Tab label="Item Three" value="3" /> */}
+            <Tab label="Doanh thu " value="1" />
+            <Tab label="Đang xữ lý" value="2" />
+            <Tab label="Đơn đang giao" value="3" />
+            <Tab label="Đơn đã giao" value="4" />
+            
           </TabList>
         </Box>
-        <TabPanel value="1"><Profile/></TabPanel>
-        {/* <TabPanel value="2">Item Two</TabPanel>
-        <TabPanel value="3">Item Three</TabPanel> */}
+        <TabPanel value="1"><Home/></TabPanel>
+        <TabPanel style={{height:'100vh',}} value="2">Chưa có đơn</TabPanel>
+        <TabPanel  style={{height:'100vh',}}  value="3">Chưa có đơn</TabPanel>
+        <TabPanel  style={{height:'100vh',}}  value="4">Chưa có đơn</TabPanel>
       </TabContext>
     </Box>
   );

@@ -13,7 +13,7 @@ import MailIcon from '@mui/icons-material/Mail';
 import NotificationsIcon from '@mui/icons-material/Notifications';
 import MoreIcon from '@mui/icons-material/MoreVert';
 import MuiAppBar from '@mui/material/AppBar';
-import { useAppStore } from '../Store/appStore';
+import { useAppStore } from '../store/appStore';
 import { MdOutlineFilterList } from "react-icons/md";
 import { MdOutlineFilterListOff } from "react-icons/md";
 import { auth } from '../firebase';

@@ -15,7 +15,7 @@ import Stack from '@mui/material/Stack';
 const About = () => {
   return (
     <div style={{ backgroundColor: '#eff1f3', height: '100%',paddingTop:'40px' ,padding:'20px'}}>
-      <Grid container>
+     <Grid container>
         <Grid item xs={12}>
           <Typography mt={4} mb={2} color={'primary'} fontWeight={'bold'} variant="h5">Tin nhắn</Typography>
         </Grid>

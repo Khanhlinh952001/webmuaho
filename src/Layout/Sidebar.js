@@ -13,7 +13,7 @@ import ListItemButton from '@mui/material/ListItemButton';
 import ListItemIcon from '@mui/material/ListItemIcon';
 import ListItemText from '@mui/material/ListItemText';
 import { useNavigate } from 'react-router-dom';
-import { useAppStore } from '../Store/appStore';
+import { useAppStore } from '../store/appStore';
 
 // Import the icons you need
 import OtherHousesIcon from '@mui/icons-material/OtherHouses';
@@ -73,7 +73,7 @@ const Drawer = styled(MuiDrawer, { shouldForwardProp: (prop) => prop !== 'open' 
 
 const menuItems = [
   { icon: <OtherHousesIcon color='primary' />, text: 'Home', route: '/' },
-  { icon: <RingVolumeIcon color='primary'  />, text: 'About', route: '/about' },
+//  { icon: <RingVolumeIcon color='primary'  />, text: 'About', route: '/about' },
   { icon: <AddCircleOutlineIcon color='primary' />, text: 'Add', route: '/addProducts' },
   { icon: <AppsIcon color='primary' />, text: 'All', route: '/allProducts' },
   { icon: <ManageAccountsIcon color='primary' />, text: 'Setting', route: '/setting' },
