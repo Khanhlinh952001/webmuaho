@@ -5,7 +5,7 @@ import Login from "../pages/AuthPage/Login";
 import AddProduct from "../pages/AddProducts";
 import AllProducts from "../pages/AllProduct";
 import EditProduct from "../Components/ EditProduct";
-import HomeTabs from "../pages/HomePage/index.js"
+import HomeTabs from "../pages/HomePage"
 const publicRouter = [
     { path: "/", component: Login, layout: null },
     { path: "/register", component: Register, layout: null }
