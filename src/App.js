@@ -1,6 +1,6 @@
 import { Route, Routes, BrowserRouter, useHistory } from 'react-router-dom';
 import { publicRouter, privateRouter } from './router';
-import DashLayout from './layout/DashboarLayout';
+import DashLayout from './layout/dashboarLayout';
 import { Fragment } from 'react';
 import { useState, useEffect } from 'react';
 import { onAuthStateChanged } from 'firebase/auth';
