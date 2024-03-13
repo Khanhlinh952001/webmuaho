@@ -1,5 +1,5 @@
 import * as React from 'react';
-import { styled, alpha } from '@mui/material/styles';
+import { styled } from '@mui/material/styles';
 import Box from '@mui/material/Box';
 import Toolbar from '@mui/material/Toolbar';
 import IconButton from '@mui/material/IconButton';
@@ -11,7 +11,7 @@ import MailIcon from '@mui/icons-material/Mail';
 import NotificationsIcon from '@mui/icons-material/Notifications';
 import MoreIcon from '@mui/icons-material/MoreVert';
 import MuiAppBar from '@mui/material/AppBar';
-import { useAppStore } from '../store/appStore';
+import { useAppStore } from '../Store/appStore';
 import { MdOutlineFilterList } from "react-icons/md";
 import { MdOutlineFilterListOff } from "react-icons/md";
 import { auth } from '../firebase';

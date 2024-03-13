@@ -15,7 +15,7 @@ import { createTheme, ThemeProvider } from '@mui/material/styles';
 import { signInWithEmailAndPassword } from 'firebase/auth';
 import { auth } from '../../firebase';
 import { useNavigate } from 'react-router-dom';
-import { ErrorAlert } from '../../contains/Alert';
+import { ErrorAlert } from '../../Contains/Alert';
 
 
 const defaultTheme = createTheme();

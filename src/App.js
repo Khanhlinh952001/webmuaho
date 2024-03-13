@@ -1,6 +1,6 @@
 import { Route, Routes, BrowserRouter } from 'react-router-dom';
-import { publicRouter, privateRouter } from './Router';
-import DashLayout from './layout/dashboarLayout';
+import { publicRouter, privateRouter } from './Router'
+import DashLayout from './layout/dashboardLayout';
 import { Fragment } from 'react';
 import { useState, useEffect } from 'react';
 import { onAuthStateChanged } from 'firebase/auth';
@@ -8,14 +8,12 @@ import { auth } from './firebase';
 
 function App() {
   const [user, setUser] = useState(false);
-  const [isAuthenticated, setIsAuthenticated] = useState(false);
   
 
   useEffect(() => {
     const unsubscribe = onAuthStateChanged(auth, (user) => {
       if (user) {
         setUser(user);
-        setIsAuthenticated(true);
       } else {
         setUser(false);
       }

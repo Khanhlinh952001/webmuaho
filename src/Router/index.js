@@ -4,7 +4,7 @@ import Register from "../pages/authPage/Register"
 import Login from "../pages/authPage/Login";
 import AddProduct from "../pages/addProducts";
 import AllProducts from "../pages/allProduct";
-import EditProduct from "../components/ EditProduct";
+import EditProduct from "../Components/ EditProduct";
 import HomeTabs from "../pages/homePage";
 const publicRouter = [
     { path: "/", component: Login, layout: null },

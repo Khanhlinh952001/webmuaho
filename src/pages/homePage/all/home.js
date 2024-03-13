@@ -1,8 +1,6 @@
 import React from 'react'
-import Sidebar from '../../../layout/Sidebar'
 import Box from '@mui/material/Box';
 import Typography from '@mui/material/Typography';
-import SearchAppBar from '../../../layout/Navbar';
 import Grid from '@mui/material/Grid';
 import Card from '@mui/material/Card';
 import CardContent from '@mui/material/CardContent';
@@ -11,11 +9,10 @@ import '../../../dash.css';
 import StorefrontIcon from '@mui/icons-material/Storefront';
 import CreditCardIcon from '@mui/icons-material/CreditCard';
 import ShoppingBagIcon from '@mui/icons-material/ShoppingBag'
-import Accordionx from '../../../contains/Accordion';
-import BarChart from '../../../charts/BarChars';
+import Accordionx from '../../../Contains/Accordion';
+import BarChart from '../../../Charts/BarChars';
 import CountUp from 'react-countup';
-import { SuccessAlert } from '../../../contains/Alert';
-import { useEffect, useState } from 'react';
+
 function Home() {
 
     return (
