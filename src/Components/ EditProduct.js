@@ -285,9 +285,9 @@ function EditProduct() {
                       width: "80%",
                       paddingLeft: "10px",
                     }}
-                    name="ProductName"
+                    name="name"
                     value={editedProduct.name ?? { translatedProductName }}
-                    onChange={handleInputChange}
+                      onChange={handleInputChange}
                   />
                 </>
               )}
@@ -344,7 +344,7 @@ function EditProduct() {
           <Grid item xs={10}>
             <input
               type="text"
-              name="Description"
+              name="desc"
               style={{
                 height: "40px",
                 flex: 1,
