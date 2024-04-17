@@ -5,31 +5,16 @@ import { Fragment } from 'react';
 import { useState, useEffect } from 'react';
 import { onAuthStateChanged } from 'firebase/auth';
 import { auth } from './firebase';
+import { useAuth } from './hooks/useClient';
 
 function App() {
-  const [user, setUser] = useState(false);
+  const {isAuthenticated}= useAuth();
   
-
-  useEffect(() => {
-    const unsubscribe = onAuthStateChanged(auth, (user) => {
-      if (user) {
-        setUser(user);
-      } else {
-        setUser(false);
-      }
-    });
-
-    // Clean up subscription
-    return () => unsubscribe();
-  }, []);
-
-
-
   return (
     <>
       <BrowserRouter>
         <Routes>
-          {user
+          {isAuthenticated
             ? privateRouter.map((route, index) => {
                 const Page = route.component;
                 let Layout = DashLayout;

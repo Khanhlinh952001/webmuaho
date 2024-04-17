@@ -23,7 +23,7 @@ const defaultTheme = createTheme();
 const Login = () => {
   const navigate = useNavigate();
   const [showLoginNotification, setShowLoginNotification] = useState(false);
-
+   
   const handleSubmit = async (event) => {
     event.preventDefault();
     const data = new FormData(event.currentTarget);
@@ -31,8 +31,8 @@ const Login = () => {
     try {
       const userCredential = await signInWithEmailAndPassword(auth, data.get('email'), data.get('password'));
       // Signed in 
-      const user = userCredential.user;
-      console.log(user);
+      // const user = userCredential.user;
+      // console.log(user);
       navigate('/'); // Change '/dashboard' to the desired path
     } catch (error) {   
      

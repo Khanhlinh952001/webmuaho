@@ -125,7 +125,6 @@ function Home() {
 
 
         </div>
-
     )
 }
 

@@ -10,14 +10,11 @@ import IconButton from '@mui/material/IconButton';
 import Stack from '@mui/material/Stack';
 import CircularProgress from '@mui/material/CircularProgress';
 import AddIcon from '@mui/icons-material/Add';
-import TranslateIcon from '@mui/icons-material/Translate';
 import EditIcon from '@mui/icons-material/Edit';
 import DeleteIcon from '@mui/icons-material/Delete';
 import { ref, child, get, remove } from 'firebase/database';
 import { database } from '../../firebase';
 import { auth } from '../../firebase';
-import UpdateIcon from '@mui/icons-material/Update';
-import CloudUploadIcon from '@mui/icons-material/CloudUpload';
 import { useNavigate } from 'react-router-dom';
 import { NotificationContainer, NotificationManager } from 'react-notifications';
 import 'react-notifications/lib/notifications.css';
@@ -148,10 +145,10 @@ function AllProducts() {
                         </Typography>
                         <Stack flexDirection={'row'} >
                           <Typography color={'gray'} sx={{ marginTop: '4px' }} variant='body1'>
-                            {product.price}원
+                          {Math.floor(product.price).toLocaleString('en')}VND
                           </Typography>
                           <Typography ml={4} color={'red'} variant='h6'>
-                            {product.sales}원
+                            {Math.floor(product.sales).toLocaleString('en')}VND
                           </Typography>
                         </Stack>
                         <Typography variant='body1'>

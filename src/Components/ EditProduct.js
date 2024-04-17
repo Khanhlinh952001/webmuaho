@@ -1,11 +1,7 @@
 import React, { useState, useEffect } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import { ref, child, get, set } from "firebase/database";
-import {
-  ref as storageRef,
-  getDownloadURL,
-  uploadBytes,
-} from "firebase/storage";
+import { ref as storageRef, getDownloadURL, uploadBytes } from "firebase/storage";
 import { database, storage } from "../firebase";
 import { v4 as uuidv4 } from "uuid";
 import CardMedia from "@mui/material/CardMedia";
@@ -23,7 +19,7 @@ import {
   NotificationManager,
 } from "react-notifications";
 import "react-notifications/lib/notifications.css";
-import { auth } from "../firebase";
+import { useAuth } from "../hooks/useClient";
 const PRODUCT_PATH = "Products/";
 const FILE_PATH = "files/";
 
@@ -54,41 +50,15 @@ const translate = async (text, sourceLang, targetLang) => {
 };
 
 function EditProduct() {
+ 
   const { productId } = useParams();
   const navigate = useNavigate();
   const [editedProduct, setEditedProduct] = useState({});
   const [img, setImg] = useState(null);
   const [loading, setLoading] = useState(false);
   const [translatedProductName, setTranslatedProductName] = useState("");
-  const [user, setUser] = useState(null);
-  const uid = auth.currentUser?.uid;
-  const dbRef = ref(database);
+   const {client}= useAuth();
 
-  useEffect(() => {
-    const fetchData = async () => {
-      try {
-        if (uid) {
-          const snapshot = await get(child(dbRef, `users/${uid}`));
-          if (snapshot.exists()) {
-            setUser(snapshot.val());
-          } else {
-            console.log("Không có dữ liệu");
-          }
-        }
-      } catch (error) {
-        console.error(error);
-      }
-    };
-
-    fetchData();
-
-    // Cleanup function để hủy đăng ký bất kỳ listener hoặc tác vụ async nào
-    return () => {
-      // Các công việc cleanup nếu cần
-    };
-  }, [uid]);
-
-  console.log("TIKI" + user?.tikiKey);
   useEffect(() => {
     const fetchData = async () => {
       try {
@@ -318,7 +288,7 @@ function EditProduct() {
               }}
               value={editedProduct.price ?? ""}
               onChange={handleInputChange}
-            />
+            />VND
           </Grid>
 
           <Grid item xs={2}>
@@ -334,9 +304,10 @@ function EditProduct() {
                 width: "80%",
                 paddingLeft: "10px",
               }}
-              value={editedProduct.sales ?? ""}
+              value={ editedProduct.sales || ""}
               onChange={handleInputChange}
             />
+            VND
           </Grid>
           <Grid item xs={2}>
             Description:
@@ -398,7 +369,7 @@ function EditProduct() {
             Shoppe Display:
           </Grid>
           <Grid item xs={10}>
-            {user && user.shoppeKey ? (
+            {client && client.shoppeKey ? (
               <select
                 name="shoppeDisplay"
                 style={{
@@ -437,7 +408,7 @@ function EditProduct() {
             Tiki Display:
           </Grid>
           <Grid item xs={10}>
-            {user && user.tikiKey ? (
+            {client && client.tikiKey ? (
               <select
                 name="tikiDisplay"
                 style={{
@@ -479,7 +450,7 @@ function EditProduct() {
             Lazada Display:
           </Grid>
           <Grid item xs={10}>
-            {user && user.lazadaKey ? (
+            {client && client.lazadaKey ? (
               <select
                 name="lazadaDisplay"
                 style={{

@@ -28,12 +28,12 @@ import {
 import "react-notifications/lib/notifications.css";
 import { parseString } from "xml2js";
 import { CircularProgress } from "@mui/material";
-
+import { useAuth } from "../../hooks/useClient";
 function AddProducts() {
   const [searchQuery, setSearchQuery] = useState("");
   const [jsonData, setJsonData] = useState(null);
   const [loading, setLoading] = useState(false);
-
+   const { client }=useAuth();
   const apiKey = process.env.REACT_APP_UNSPLASH_KEY;
 
   const handleSearchChange = async () => {
@@ -81,8 +81,8 @@ function AddProducts() {
       name: product.ProductName[0],
       code: product.ProductCode[0],
       img: images,
-      price: product.ProductPrice[0],
-      sales: product.SalePrice[0],
+      price: product.ProductPrice[0] * client.ratio,
+      sales: product.SalePrice[0]* client.ratio,
       ladadaDisplay:"false",
       tikiDisplay: "false",
       shoppeDisplay:"false",
